@@ -1,0 +1,13 @@
+{
+	user
+	bill{
+		products{
+			price
+			quantity
+			name
+		}
+	}
+	config{
+		font_style
+	}
+}

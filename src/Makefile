@@ -1,11 +1,13 @@
-all: compile
+all: main
 
-compile: gq.l gq.y
+grammar: gq.l gq.y
 	flex gq.l
-	bison -o gq.tab.c gq.y -yd
-	g++ -o gq lex.yy.c gq.tab.c -lfl -ly
+	bison -o gq.tab.c gq.y -H
 
-run: compile
+main: grammar main.cpp
+	g++ -o gq main.cpp lex.yy.c gq.tab.c -lfl -ly
+
+run: main
 	./gq
 
 clean:
