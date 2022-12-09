@@ -1,9 +1,0 @@
-{
-	"files.associations": {
-		"*.ejs": "html",
-		"*.rs": "rust",
-		"*.l": "lex",
-		"string": "cpp",
-		"iostream": "cpp"
-	}
-}

@@ -4,8 +4,6 @@
 #include <string>
 using namespace std;
 
-
-// This definition is in order
 extern "C" int yylex();
 extern void yyerror (char const *);
 
@@ -29,8 +27,7 @@ alphanumeric [a-zA-Z0-9_]
 \n  {yylineno++;}
 [\t ] {}
 . {
-
-	cerr << "lexical error at line " << yylineno << ": invalid character '" << yytext << "'" << endl;
+	cerr << "Lexical error at line " << yylineno << ": invalid character '" << yytext << "'" << endl;
 	exit(1);
 }
 

@@ -1,15 +1,11 @@
 %{
-using namespace std;
-
 #include <string>
 #include <iostream>
-
 #include <string>
 #include <vector>
+using namespace std;
 // Include types here so yyerror recognizes struct
 #include "types.hpp"
-
-
 
 extern "C" int yylex();
 extern int yylineno;
@@ -23,11 +19,11 @@ string WHITE = "\033[0m";
 %}
 
 %parse-param {Query* result_query}
-%code requires{
-	// Include this so union recognizes types
-#include "types.hpp"
+// Include this so union recognizes types
+%code requires {
+	#include "types.hpp"
 }
-%union{
+%union {
 	string* key_name;
 	vector<Query*>* queries;
 	Query* queryVal;
@@ -35,29 +31,22 @@ string WHITE = "\033[0m";
 %define parse.error verbose
 
 %token LBRACKET RBRACKET YYEOF
-
 %token <key_name> KEY
 
 %type <queries> query_content
 %type <queryVal> query S
 %start S
 
-
-
 %%
 
-S: LBRACKET query_content RBRACKET YYEOF{
-
+S: LBRACKET query_content RBRACKET YYEOF {
 	Query new_query;
 	new_query.key = NULL;
 	new_query.children = $2;
-	*result_query= new_query;
+	*result_query = new_query;
 }
 
-
-query_content: 
-	query_content KEY
-	{
+query_content: query_content KEY {
 		Query* new_query = (Query*) malloc(sizeof(Query));
 		new_query->key = $2;
 		new_query->children = NULL;
@@ -81,7 +70,7 @@ query_content:
 		$$->push_back($1);
 	}
 
-query: KEY LBRACKET query_content RBRACKET{
+query: KEY LBRACKET query_content RBRACKET {
 	Query* new_query = (Query*) malloc(sizeof(Query));
 	new_query->key = $1;
 	new_query->children = $3;
@@ -92,10 +81,6 @@ query: KEY LBRACKET query_content RBRACKET{
 
 
 void yyerror (Query* result_query, char const *error) {
-
 	cout << RED << "Error: " << WHITE << error << endl;
 	cout << ORANGE << "Line: " << WHITE << yylineno << endl;
 }
-
-
-
