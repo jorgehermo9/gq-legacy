@@ -1,12 +1,6 @@
-{
+{	
 	user
-	bill{
-		products{
-			price
-			quantity
-			name
-		}
-	}
+	products
 	config{
 		font_style
 	}

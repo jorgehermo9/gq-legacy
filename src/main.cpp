@@ -14,10 +14,10 @@ void print_spaces(int level) {
   }
 }
 
-void print_query(Query query, int level) {
+void do_print_query(Query query, int level) {
   string key;
-  if (query.key != NULL)
-    key = *query.key;
+  if (query.key_info.name != NULL)
+    key = *query.key_info.name;
 
   print_spaces(level);
   if (query.children == NULL) {
@@ -27,12 +27,23 @@ void print_query(Query query, int level) {
 
   cout << key << " {\n";
   for (auto child : *query.children) {
-    print_query(*child, level + 1);
+    do_print_query(child, level + 1);
   }
   print_spaces(level);
   cout << "}" << endl;
 }
 
+void print_query(Query query) {
+  do_print_query(query, 0);
+}
+
+void print_error(Query query, string error_message) {
+  cerr << RED << "Error " << RESET << "in query '" << CYAN
+       << *query.key_info.name << RESET << "' declared at " << RED
+       << query.key_info.declared_line << ":" << query.key_info.declared_col
+       << RESET << ": " << error_message << endl;
+  exit(1);
+}
 json filter(Query query, json data, string path) {
   json local_data;
 
@@ -41,26 +52,29 @@ json filter(Query query, json data, string path) {
   }
 
   if (data.is_array()) {
+    int acc = 0;
     for (auto element : data) {
-      local_data.push_back(filter(query, element, path));
+      local_data.push_back(
+          filter(query, element, path + "[" + to_string(acc) + "]"));
+      acc++;
     }
   } else if (data.is_object()) {
     for (auto child : *query.children) {
-      string target_key = *child->key;
+      string target_key = *child.key_info.name;
       if (!data.contains(target_key)) {
-        cerr << "Error: could not find key '" << target_key << "' in path '"
-             << path << "' of json file" << endl;
-        exit(1);
+        string error_message =
+            "Could not find key '" + target_key + "' in '" + path + "'";
+        print_error(query, error_message);
       }
       local_data[target_key] =
-          filter(*child, data[target_key], path + "." + target_key);
+          filter(child, data[target_key], path + "." + target_key);
     }
   } else {
     // if data is not an array or an object AND has children in the query, its
     // an error
-    cerr << "Error: could not find key '" << *query.key << "' in path '" << path
-         << "' of json file" << endl;
-    exit(1)
+    string error_message =
+        "Query specifies fields, but '" + path + "' is not an object";
+    print_error(query, error_message);
   }
   return local_data;
 }
@@ -78,7 +92,7 @@ int main(int argc, char* argv[]) {
       yyin = fopen(argv[1], "r");
       if (yyin == NULL) {
         cerr << "Error: File not found" << endl;
-        exit(1)
+        exit(1);
       }
       yyparse(&query);
       fclose(yyin);
@@ -113,6 +127,7 @@ int main(int argc, char* argv[]) {
   std::ifstream f("example.json");
   json data = json::parse(f);
 
+  // use root at starting path, for error displaying...
   json result = filter(query, data, "root");
   cout << result.dump(2) << endl;
 

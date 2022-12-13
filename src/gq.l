@@ -2,13 +2,14 @@
 #include "gq.tab.h"
 #include <iostream>
 #include <string>
+#include "types.hpp"
 using namespace std;
 
 extern "C" int yylex();
 extern void yyerror (char const *);
 
-extern char* RED;
-extern char* WHITE;
+int lineno = 1;
+int colno = 1;
 %}
 
 letters [a-zA-Z]
@@ -16,18 +17,26 @@ alphanumeric [a-zA-Z0-9_]
 
 %%
 
-({letters}|"_")({alphanumeric})* { 
-	yylval.key_name = new string(yytext);
+({letters}|"_")({alphanumeric})* {
+	KeyInfo key_info;
+	key_info.name = new string(yytext);
+	key_info.declared_line = lineno;
+	key_info.declared_col = colno;
+
+	colno+=strlen(yytext);
+
+	yylval.key_info_val = key_info;
 	return KEY;
 }
 
-"{" { return LBRACKET;}
-"}" { return RBRACKET;}
+"{" { colno++;return LBRACKET;}
+"}" { colno++;return RBRACKET;}
 
-\n  {yylineno++;}
-[\t ] {}
+\n  {colno=1;lineno++;}
+[\t ] {colno++;}
 . {
-	cerr << "Lexical error at line " << yylineno << ": invalid character '" << yytext << "'" << endl;
+	cerr << RED <<"Lexical error" <<RESET<< " at position " <<RED<< lineno
+	<<":"<<colno<< RESET<<": invalid character '" << yytext << "'" << endl;
 	exit(1);
 }
 
