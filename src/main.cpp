@@ -38,6 +38,13 @@ void print_query(Query query) {
 }
 
 void print_error(Query query, string error_message) {
+  if (query.key_info.name == NULL) {  // Root query
+    cerr << RED << "Error " << RESET << "in root query declared at " << RED
+         << query.key_info.declared_line << ":" << query.key_info.declared_col
+         << RESET << ": " << error_message << endl;
+    exit(1);
+  }
+
   cerr << RED << "Error " << RESET << "in query '" << CYAN
        << *query.key_info.name << RESET << "' declared at " << RED
        << query.key_info.declared_line << ":" << query.key_info.declared_col
@@ -47,23 +54,35 @@ void print_error(Query query, string error_message) {
 json filter(Query query, json data, string path) {
   json local_data;
 
+  // Use local_path for error printing, handle special case of error
+  // in root query
+  string local_path = path;
+  if (query.key_info.name == NULL) {
+    local_path = ".";
+  }
+
   if (query.children == NULL) {
     return data;
   }
 
   if (data.is_array()) {
+    local_data = json::array();
+
     int acc = 0;
     for (auto element : data) {
       local_data.push_back(
           filter(query, element, path + "[" + to_string(acc) + "]"));
       acc++;
     }
+
   } else if (data.is_object()) {
+    local_data = json::object();
+
     for (auto child : *query.children) {
       string target_key = *child.key_info.name;
       if (!data.contains(target_key)) {
         string error_message =
-            "Could not find key '" + target_key + "' in '" + path + "'";
+            "Could not find key '" + target_key + "' in '" + local_path + "'";
         print_error(query, error_message);
       }
       local_data[target_key] =
@@ -73,9 +92,11 @@ json filter(Query query, json data, string path) {
     // if data is not an array or an object AND has children in the query, its
     // an error
     string error_message =
-        "Query specifies fields, but '" + path + "' is not an object";
+        "Query specifies fields, but '" + local_path + "' is not an object";
     print_error(query, error_message);
   }
+
+  // If none could match, return empty object
   return local_data;
 }
 
@@ -128,7 +149,7 @@ int main(int argc, char* argv[]) {
   json data = json::parse(f);
 
   // use root at starting path, for error displaying...
-  json result = filter(query, data, "root");
+  json result = filter(query, data, "");
   cout << result.dump(2) << endl;
 
   return 0;

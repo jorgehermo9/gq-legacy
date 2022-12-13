@@ -7,17 +7,18 @@
 	  "products": [
 		[
 			{
-				"name": "Coca Cola",
+				"name": "Inner Coca Cola",
 				"quantity": "2",
 				"price": 1.5
 			},
 			{
+				"name": "Inner Pepsi",
 				"quantity": 1,
 				"price": 1.5
 			}
 	  	],
 		{
-			"name": "Pepsi",
+			"name": "Outer Pepsi",
 			"quantity": 1,
 			"price": 1.5
 		}]
