@@ -47,34 +47,70 @@ void print_error(Query query, string error_message) {
     exit(1);
   }
 
-  cerr << RED << "Error " << RESET << "in query '" << CYAN
-       << *query.query_key.info.name << RESET << "' declared at " << RED
+  cerr << RED << "Error " << RESET << "in query " << CYAN
+       << *query.query_key.info.name << RESET << " declared at " << RED
        << query.query_key.info.at.line << ":" << query.query_key.info.at.col
        << RESET << ": " << error_message << endl;
   exit(1);
 }
 
-void print_argument_value(ArgumentValue value) {
-  switch (value.type) {
-    case STRING:
-      cout << *value.v.str;
-      break;
-    case INT:
-      cout << value.v.i;
-      break;
-    case FLOAT:
-      cout << value.v.f;
-      break;
+void print_warning(Query query, string warning_message) {
+  if (query.query_key.info.name == NULL) {  // Root query
+    cerr << ORANGE << "Warning " << RESET << "in root query declared at "
+         << ORANGE << query.query_key.info.at.line << ":"
+         << query.query_key.info.at.col << RESET << ": " << warning_message
+         << endl;
+    return;
   }
+
+  cerr << ORANGE << "Warning " << RESET << "in query " << CYAN
+       << *query.query_key.info.name << RESET << " declared at " << ORANGE
+       << query.query_key.info.at.line << ":" << query.query_key.info.at.col
+       << RESET << ": " << warning_message << endl;
 }
+
+bool fulfill_arguments(json element, Query parent_query, string path) {
+  vector<Argument>* args = parent_query.query_key.args;
+  bool result = true;
+
+  if (args == NULL) {
+    return true;
+  }
+  for (Argument arg : *args) {
+    string key = *arg.info.name;
+    if (!element.contains(key)) {
+      print_warning(parent_query, "Query argument " + CYAN + key + RESET +
+                                      " not found in element at " + CYAN +
+                                      path + RESET + "");
+      result = false;
+      continue;
+    }
+
+    // TODO: Check types
+    switch (arg.value.type) {
+      case STRING:
+        if (element[key] != *arg.value.v.str) {
+          result = false;
+        }
+        break;
+      case INT:
+        if (element[key] != arg.value.v.i) {
+          result = false;
+        }
+        break;
+      case FLOAT:
+        if (element[key] != arg.value.v.f) {
+          result = false;
+        }
+        break;
+    }
+  }
+  return result;
+}
+
 json filter(Query query, json data, string path) {
   json local_data;
 
-  if (query.query_key.args != NULL) {
-    for (auto val : *query.query_key.args) {
-      print_argument_value(val.value);
-    }
-  }
   // Use local_path for error printing, handle special case of error
   // in root query
   string local_path = path;
@@ -82,7 +118,8 @@ json filter(Query query, json data, string path) {
     local_path = ".";
   }
 
-  if (query.children == NULL) {
+  // Return all fields only if data is an object
+  if (query.children == NULL && !data.is_array()) {
     return data;
   }
 
@@ -91,9 +128,14 @@ json filter(Query query, json data, string path) {
 
     int acc = 0;
     for (auto element : data) {
-      local_data.push_back(
-          filter(query, element, path + "[" + to_string(acc) + "]"));
+      string element_path = local_path + "[" + to_string(acc) + "]";
       acc++;
+
+      if (!fulfill_arguments(element, query, element_path)) {
+        continue;
+      }
+
+      local_data.push_back(filter(query, element, element_path));
     }
 
   } else if (data.is_object()) {
@@ -103,7 +145,7 @@ json filter(Query query, json data, string path) {
       string target_key = *child.query_key.info.name;
       if (!data.contains(target_key)) {
         string error_message =
-            "Could not find key '" + target_key + "' in '" + local_path + "'";
+            "Could not find key " + target_key + " in " + local_path + "";
         print_error(query, error_message);
       }
       local_data[target_key] =
@@ -113,7 +155,7 @@ json filter(Query query, json data, string path) {
     // if data is not an array or an object AND has children in the query, its
     // an error
     string error_message =
-        "Query specifies fields, but '" + local_path + "' is not an object";
+        "Query specifies fields, but " + local_path + " is not an object";
     print_error(query, error_message);
   }
 
@@ -197,7 +239,7 @@ int main(int argc, char* argv[]) {
 
   yyin = fopen(query_file.c_str(), "r");
   if (yyin == NULL) {
-    cerr << "Error: query file '" << query_file << "' not found" << endl;
+    cerr << "Error: query file " << query_file << " not found" << endl;
     exit(1);
   }
   yyparse(&query);

@@ -21,4 +21,4 @@ todos los campos del json.
 
 ## TODO
 
-Permitir empty queries en el root, para no tener que saber todos los campos
+Meterle filtros a la root query

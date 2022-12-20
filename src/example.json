@@ -1,30 +1,5 @@
-{
-	"user": "David",
-	"bill": {
-	  "title": "Hola",
-	  "purchaser": "Trile S.A",
-	  "seller": "Corunat S.A",
-	  "products": [
-		{
-		  "name": "Coca Cola",
-		  "quantity": 2,
-		  "price": 1.5
-		},
-		{
-		  "name": "Fanta",
-		  "quantity": 2,
-		  "price": 1.5
-		},
-		{
-		  "name": "Pepsi",
-		  "quantity": 1,
-		  "price": 1.5
-		}
-	  ]
-	},
-	"config": {
-	  "font_size": 12,
-	  "font_style": "latex"
-	}
-  }
-  
+{"items":[
+	{"name":"hola","id":100},
+	{"name":"hola2"},
+	{"name":"hola3"}
+]}

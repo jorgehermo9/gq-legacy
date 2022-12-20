@@ -1,0 +1,5 @@
+{
+  items(id: "100", name: "hola") {
+    id
+  }
+}
