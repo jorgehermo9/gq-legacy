@@ -49,23 +49,23 @@ void error_in_query(KeyInfo key_info, string error);
 %type <query_val> query
 %type <query_key_val> query_key
 %type <arg_val> argument
-%type <arg_list_val> argument_list
+%type <arg_list_val> argument_list arguments
 
 %start S
 %%
 
-S: LBRACKET query_content RBRACKET YYEOF {
+S: argument_list LBRACKET query_content RBRACKET YYEOF {
 	KeyInfo key_info;
 	
 	key_info.name = NULL;
-	key_info.at = $1;
+	key_info.at = $2;
 
 	QueryKey query_key;
 	query_key.info = key_info;
 	query_key.args = NULL;
 
 	result_query->query_key = query_key;
-	result_query->children = $2;
+	result_query->children = $3;
 	} 
 	|LBRACKET RBRACKET YYEOF{
 		KeyInfo key_info;
@@ -140,12 +140,15 @@ argument :
 		// necessary to be in a state error)
 		YYERROR;
 	}
-	| KEY error{
+
+	/* TODO: Fix shift/reduce */
+	/* Commenting this removes the error but idk */
+	/* | KEY error {
 		source_error_message = new string("expected ':' after argument field '" +CYAN + *$1.name + RESET+ 
-		"' declared at "+RED+to_string($1.at.line)+":"+to_string($1.at.col)+RESET);
-		// Throw error token
+		"' declared at "+ RED +to_string($1.at.line)+":"+to_string($1.at.col)+RESET);
+
 		YYERROR;
-	}
+	} */
 
 argument_list : 
 	// Do not handle error for arguments, since it is handled in argument rules
@@ -161,42 +164,55 @@ argument_list :
 		Argument last_argument = $1->back();
 		source_error_message = new string("unexpected token after argument field '"
 		+CYAN + *last_argument.info.name + RESET+
-		"' declared at "+RED+to_string(last_argument.info.at.line)+":"+to_string(last_argument.info.at.col)+RESET
-		+"\n"+GREEN+"Hint:"+RESET+" arguments must be separated by ','");
+		"' declared at "+RED+to_string(last_argument.info.at.line) + ":" + to_string(last_argument.info.at.col) + RESET
+		+ "\n" + GREEN + "Hint:" + RESET + " arguments must be separated by ','");
+
+		// Throw error token
+		YYERROR;
+	}
+	| argument_list COMMA error {
+		Argument last_argument = $1->back();
+		source_error_message = source_error_message == NULL ?
+			new string("unexpected token after argument field '"
+			+ CYAN + *last_argument.info.name + RESET+
+			"' declared at "+RED+to_string(last_argument.info.at.line) + ":" + to_string(last_argument.info.at.col) + RESET) :
+			source_error_message;
 
 		// Throw error token
 		YYERROR;
 	}
 
+arguments:
+	LPAREN argument_list RPAREN {
+		$$ = $2;
+	}
+	| LPAREN error RPAREN {
+		source_error_message = source_error_message==NULL?
+			new string("unexpected token in query arguments"):
+			source_error_message;
 
+		YYERROR;
+	}
 
 query_key : 
-	KEY{
+	KEY {
 		QueryKey query_key;
 		query_key.info = $1;
 		query_key.args = NULL;
 		$$ = query_key;
 	}
-	| KEY LPAREN argument_list RPAREN
-	{
+	| KEY arguments {
 		QueryKey query_key;
 		query_key.info = $1;
-		query_key.args = $3;
+		query_key.args = $2;
 		$$ = query_key;
 	}
-	| KEY LPAREN error RPAREN{
-		string error_message = source_error_message==NULL?
-			"unexpected token in query arguments":
-			*source_error_message;
-
-		error_in_query($1,error_message);
-	}
 	| KEY error {
-		string error_message = "unexpected token after query key";
+		string error_message = source_error_message==NULL?
+			"unexpected token after query key":
+			*source_error_message;
 		error_in_query($1,error_message);
 	}
-
-
 
 query_content: query_content query_key {
 		Query new_query;
@@ -223,8 +239,6 @@ query_content: query_content query_key {
 		$$->push_back($1);
 }
 
-	
-
 query: query_key LBRACKET query_content RBRACKET {
 	Query new_query;
 	new_query.query_key = $1;
@@ -235,7 +249,6 @@ query: query_key LBRACKET query_content RBRACKET {
 		error_in_query($1.info,"error in query content");
 	}
 	| query_key LBRACKET RBRACKET{
-		
 		error_in_query($1.info,"query fields cannot be empty\n"
 		+GREEN+"Hint:"+RESET+" in order to get all fields, remove brackets");
 	}
@@ -249,12 +262,9 @@ query: query_key LBRACKET query_content RBRACKET {
 
 %%
 
-
 void yyerror (Query* result_query, char const *error) {
 	/* error_at_position(string(error), lineno, colno); */
 }
-
-
 
 void error_at_position(string error, int line,int col) {
     /* Some errors need to use line number on the last line scanned (TEXT XML_ELEMENT tokens),
@@ -280,10 +290,9 @@ void error_no_position(string error) {
 }
 
 void error_in_query(KeyInfo key_info, string error) {
-	cerr << RED << "Syntax error "<< RESET << "in query '" <<
-	CYAN << *key_info.name << RESET <<"' at " << RED
+	cerr << RED << "Syntax error "<< RESET << "in query " <<
+	CYAN << "'" << *key_info.name << "'" << RESET <<"' at " << RED
 	<< key_info.at.line << ":" << key_info.at.col
 	<< RESET << ": " << error << endl;
 	exit(1);
 }
-

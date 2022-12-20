@@ -47,8 +47,8 @@ void print_error(Query query, string error_message) {
     exit(1);
   }
 
-  cerr << RED << "Error " << RESET << "in query " << CYAN
-       << *query.query_key.info.name << RESET << " declared at " << RED
+  cerr << RED << "Error " << RESET << "in query " << CYAN << "'"
+       << *query.query_key.info.name << "'" << RESET << " declared at " << RED
        << query.query_key.info.at.line << ":" << query.query_key.info.at.col
        << RESET << ": " << error_message << endl;
   exit(1);
@@ -63,10 +63,11 @@ void print_warning(Query query, string warning_message) {
     return;
   }
 
-  cerr << ORANGE << "Warning " << RESET << "in query " << CYAN
-       << *query.query_key.info.name << RESET << " declared at " << ORANGE
-       << query.query_key.info.at.line << ":" << query.query_key.info.at.col
-       << RESET << ": " << warning_message << endl;
+  cerr << ORANGE << "Warning " << RESET << "in query " << CYAN << "'"
+       << *query.query_key.info.name << "'" << RESET << " declared at "
+       << ORANGE << query.query_key.info.at.line << ":"
+       << query.query_key.info.at.col << RESET << ": " << warning_message
+       << endl;
 }
 
 bool fulfill_arguments(json element, Query parent_query, string path) {
@@ -79,27 +80,42 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
   for (Argument arg : *args) {
     string key = *arg.info.name;
     if (!element.contains(key)) {
-      print_warning(parent_query, "Query argument " + CYAN + key + RESET +
+      print_warning(parent_query, "query argument " + CYAN + key + RESET +
                                       " not found in element at " + CYAN +
-                                      path + RESET + "");
+                                      path + RESET);
       result = false;
       continue;
     }
 
-    // TODO: Check types
+    json field = element[key];
     switch (arg.value.type) {
       case STRING:
-        if (element[key] != *arg.value.v.str) {
+        if (!field.is_string()) {
+          print_error(parent_query, "query argument " + CYAN + key + RESET +
+                                        " is a string but field " + CYAN + key + RESET + "at " +
+                                        CYAN + path + RESET + " is not a string" );
+        }
+        if (field != *arg.value.v.str) {
           result = false;
         }
         break;
       case INT:
-        if (element[key] != arg.value.v.i) {
+        if (!field.is_number()) {
+          print_error(parent_query, "query argument " + CYAN + key + RESET +
+                                        " is an number but field " + CYAN + key + RESET + "at " +
+                                        CYAN + path + RESET + " is not an number" );
+        }
+        if (field != arg.value.v.i) {
           result = false;
         }
         break;
       case FLOAT:
-        if (element[key] != arg.value.v.f) {
+        if (!field.is_number()) {
+          print_error(parent_query, "query argument " + CYAN + key + RESET +
+                                        " is a number but field " + CYAN + key + RESET + "at " +
+                                        CYAN + path + RESET + " is not a number" );
+        }
+        if (field != arg.value.v.f) {
           result = false;
         }
         break;
