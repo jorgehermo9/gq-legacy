@@ -1,8 +1,10 @@
+#include <curl/curl.h>
 #include <fstream>
 #include <iostream>
-#include "argparse.hpp"
 #include "gq.tab.h"
-#include "json.hpp"
+#include "lib/argparse.hpp"
+#include "lib/json.hpp"
+
 using namespace std;
 using json = nlohmann::json;
 
@@ -16,8 +18,8 @@ void print_spaces(int level) {
 
 void do_print_query(Query query, int level) {
   string key;
-  if (query.key_info.name != NULL)
-    key = *query.key_info.name;
+  if (query.query_key.info.name != NULL)
+    key = *query.query_key.info.name;
 
   print_spaces(level);
   if (query.children == NULL) {
@@ -38,26 +40,45 @@ void print_query(Query query) {
 }
 
 void print_error(Query query, string error_message) {
-  if (query.key_info.name == NULL) {  // Root query
+  if (query.query_key.info.name == NULL) {  // Root query
     cerr << RED << "Error " << RESET << "in root query declared at " << RED
-         << query.key_info.declared_line << ":" << query.key_info.declared_col
+         << query.query_key.info.at.line << ":" << query.query_key.info.at.col
          << RESET << ": " << error_message << endl;
     exit(1);
   }
 
   cerr << RED << "Error " << RESET << "in query '" << CYAN
-       << *query.key_info.name << RESET << "' declared at " << RED
-       << query.key_info.declared_line << ":" << query.key_info.declared_col
+       << *query.query_key.info.name << RESET << "' declared at " << RED
+       << query.query_key.info.at.line << ":" << query.query_key.info.at.col
        << RESET << ": " << error_message << endl;
   exit(1);
+}
+
+void print_argument_value(ArgumentValue value) {
+  switch (value.type) {
+    case STRING:
+      cout << *value.v.str;
+      break;
+    case INT:
+      cout << value.v.i;
+      break;
+    case FLOAT:
+      cout << value.v.f;
+      break;
+  }
 }
 json filter(Query query, json data, string path) {
   json local_data;
 
+  if (query.query_key.args != NULL) {
+    for (auto val : *query.query_key.args) {
+      print_argument_value(val.value);
+    }
+  }
   // Use local_path for error printing, handle special case of error
   // in root query
   string local_path = path;
-  if (query.key_info.name == NULL) {
+  if (query.query_key.info.name == NULL) {
     local_path = ".";
   }
 
@@ -79,7 +100,7 @@ json filter(Query query, json data, string path) {
     local_data = json::object();
 
     for (auto child : *query.children) {
-      string target_key = *child.key_info.name;
+      string target_key = *child.query_key.info.name;
       if (!data.contains(target_key)) {
         string error_message =
             "Could not find key '" + target_key + "' in '" + local_path + "'";
@@ -100,54 +121,87 @@ json filter(Query query, json data, string path) {
   return local_data;
 }
 
+// For curl
+size_t callback(const char* in, size_t size, size_t num, string* out) {
+  const size_t totalBytes(size * num);
+  out->append(in, totalBytes);
+  return totalBytes;
+}
+
+json get_json_url(string url) {
+  CURL* curl = curl_easy_init();
+
+  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10);
+
+  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+  // use pointers to pass data to callback
+  unique_ptr<int> httpCode(new int(404));
+  unique_ptr<string> httpData(new string());
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, callback);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
+  curl_easy_perform(curl);
+  curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, httpCode.get());
+
+  curl_easy_cleanup(curl);
+
+  if (*httpCode != 200) {
+    cerr << "Error: Could not get data from " << url
+         << ", response code: " << *httpCode << endl;
+    exit(1);
+  }
+  return json::parse(*httpData);
+}
+
 int main(int argc, char* argv[]) {
   Query query;
   extern FILE* yyin;
 
-  switch (argc) {
-    case 1:
-      yyin = stdin;
-      yyparse(&query);
-      break;
-    case 2:
-      yyin = fopen(argv[1], "r");
-      if (yyin == NULL) {
-        cerr << "Error: File not found" << endl;
-        exit(1);
-      }
-      yyparse(&query);
-      fclose(yyin);
-      break;
-    default:
-      cerr << "Error: Too many arguments. Syntax: " << argv[0] << "input_file"
-           << endl;
-      exit(1);
+  argparse::ArgumentParser program("gq");
+
+  program.add_argument("-j", "--json")
+      .help("json file to query")
+      .default_value(string(""));
+  program.add_argument("-u", "--url")
+      .help("url to query")
+      .default_value(string(""));
+  program.add_argument("query").help("query to run on json file");
+
+  try {
+    program.parse_args(argc, argv);
+  } catch (const runtime_error& err) {
+    cerr << err.what() << endl;
+    cerr << program;
+    exit(1);
   }
 
-  // 	argparse::ArgumentParser program("gq");
+  json data;
+  string query_file = program.get<string>("query");
+  string json_file = program.get<string>("json");
+  string url = program.get<string>("url");
 
-  //   program.add_argument("square")
-  //     .help("display the square of a given integer")
-  //     .scan<'i', int>();
+  if (json_file == "" && url == "") {
+    // read json data from stdin
+    data = json::parse(std::cin);
+  } else if (json_file != "" && url != "") {
+    cerr << "Error: Cannot use both url and json file" << endl;
+    exit(1);
+  } else if (json_file != "") {
+    // read json data from file
+    ifstream f(json_file);
+    data = json::parse(f);
+  } else if (url != "") {
+    data = get_json_url(url);
+  }
 
-  //   try {
-  //     program.parse_args(argc, argv);
-  //   }
-  //   catch (const std::runtime_error& err) {
-  //     std::cerr << err.what() << std::endl;
-  //     std::cerr << program;
-  //     std::exit(1);
-  //   }
-
-  //   auto input = program.get<int>("square");
-  //   std::cout << (input * input) << std::endl;
-
-  // print query
-  // print_query(query, 0);
-
-  std::ifstream f("example.json");
-  json data = json::parse(f);
-
+  yyin = fopen(query_file.c_str(), "r");
+  if (yyin == NULL) {
+    cerr << "Error: query file '" << query_file << "' not found" << endl;
+    exit(1);
+  }
+  yyparse(&query);
+  fclose(yyin);
   // use root at starting path, for error displaying...
   json result = filter(query, data, "");
   cout << result.dump(2) << endl;

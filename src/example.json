@@ -7,7 +7,12 @@
 	  "products": [
 		{
 		  "name": "Coca Cola",
-		  "quantity": "2",
+		  "quantity": 2,
+		  "price": 1.5
+		},
+		{
+		  "name": "Fanta",
+		  "quantity": 2,
 		  "price": 1.5
 		},
 		{

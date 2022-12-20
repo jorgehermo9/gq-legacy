@@ -5,7 +5,7 @@ grammar: gq.l gq.y
 	bison -o gq.tab.c gq.y -H
 
 main: grammar main.cpp
-	g++ -o gq main.cpp lex.yy.c gq.tab.c -lfl -ly
+	g++ -o gq main.cpp lex.yy.c gq.tab.c -lfl -ly -lcurl
 
 run: main
 	./gq
