@@ -1,0 +1,4 @@
+{
+  products: old_products(new: false)
+  products: new_products(new: true)
+}

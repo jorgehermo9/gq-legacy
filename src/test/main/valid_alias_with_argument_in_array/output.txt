@@ -1,0 +1,27 @@
+{
+  "new_products": [
+    {
+      "id": 1,
+      "name": "Product 1",
+      "new": true,
+      "price": 10.0,
+      "quantity": 1
+    },
+    {
+      "id": 3,
+      "name": "Product 3",
+      "new": true,
+      "price": 30.0,
+      "quantity": 3
+    }
+  ],
+  "old_products": [
+    {
+      "id": 2,
+      "name": "Product 2",
+      "new": false,
+      "price": 20.0,
+      "quantity": 2
+    }
+  ]
+}

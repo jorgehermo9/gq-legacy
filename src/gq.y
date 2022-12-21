@@ -35,17 +35,17 @@ string get_loc_string(Location loc);
 	Query query_val;
 	Location loc_val;
 	ArgumentValue arg_value_val;
+	ArgumentOperation arg_op_val;
 	Argument arg_val;
 	vector<Argument>* arg_list_val;
+	string* string_val;
 }
 %define parse.error verbose
 
-%token YYEOF COLON COMMA
+%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ
 %token <key_info_val> KEY
 
-
 %token <loc_val> LBRACKET RBRACKET LPAREN RPAREN
-
 %token<arg_value_val> STRINGV INTV FLOATV BOOLV NULLV
 
 %type <queries_val> query_content
@@ -53,6 +53,9 @@ string get_loc_string(Location loc);
 %type <query_key_val> query_key
 %type <arg_val> argument
 %type <arg_list_val> argument_list arguments
+%type <string_val> alias
+%type <arg_op_val> operation
+%type <arg_value_val> arg_value
 
 %start S
 %%
@@ -120,35 +123,42 @@ S: arguments LBRACKET query_content RBRACKET YYEOF {
 		error_in_root(at, *source_error_message);
 	}
 
+operation:
+	{ $$ = EQ_OP; }
+	| TILDE { $$ = CONTAINS_OP; }
+	| NOT TILDE { $$ = NOT_CONTAINS_OP; }
+	| CARET { $$ = STARTS_WITH_OP; }
+	| NOT CARET { $$ = NOT_STARTS_WITH_OP; }
+	| LT { $$ = LT_OP; }
+	| GT { $$ = GT_OP; }
+	| LT EQ { $$ = LE_OP; }
+	| GT EQ { $$ = GE_OP; }
+	| NOT EQ { $$ = NE_OP; }
+	| EQ { $$ = EQ_OP; }
+
+arg_value: 
+	STRINGV {
+		$$ = $1;
+	}
+	| INTV {
+		$$ = $1;
+	}
+	| FLOATV {
+		$$ = $1;
+	}
+	| BOOLV {
+		$$ = $1;
+	}
+	| NULLV {
+		$$ = $1;
+	}
+
 argument: 
-	KEY COLON STRINGV {
+	KEY COLON operation arg_value {
 		Argument arg;
 		arg.info = $1;
-		arg.value = $3;
-		$$ = arg;
-	}
-	| KEY COLON INTV {
-		Argument arg;
-		arg.info = $1;
-		arg.value = $3;
-		$$ = arg;
-	}
-	| KEY COLON FLOATV {
-		Argument arg;
-		arg.info = $1;
-		arg.value = $3;
-		$$ = arg;
-	}
-	| KEY COLON BOOLV {
-		Argument arg;
-		arg.info = $1;
-		arg.value = $3;
-		$$ = arg;
-	}
-	| KEY COLON NULLV {
-		Argument arg;
-		arg.info = $1;
-		arg.value = $3;
+		arg.operation = $3;
+		arg.value = $4;
 		$$ = arg;
 	}
 	| KEY COLON error {
@@ -225,18 +235,27 @@ arguments:
 		YYERROR;
 	}
 
-query_key: 
-	KEY arguments {
+alias:
+	{ $$ = NULL; }
+	| COLON KEY {
+		$$ = $2.name;
+	}
+	| COLON error {
+		update_source_error("unexpected token in alias after ':'");
+		YYERROR;
+	}
+
+query_key:
+	KEY alias arguments {
 		QueryKey query_key;
 		query_key.info = $1;
-		query_key.args = $2;
+		query_key.args = $3;
+		query_key.alias = $2 != NULL ? $2 : new string(*$1.name);
 		$$ = query_key;
 	}
 	| KEY error {
-		string error_message = source_error_message == NULL ?
-			"unexpected token after query key" :
-			*source_error_message;
-		error_in_query($1, error_message);
+		update_source_error("unexpected token after query key");
+		error_in_query($1, *source_error_message);
 	}
 
 query_content:

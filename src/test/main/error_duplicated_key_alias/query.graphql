@@ -1,0 +1,6 @@
+{
+  person: persona {
+    name: nombre
+    age: nombre
+  }
+}

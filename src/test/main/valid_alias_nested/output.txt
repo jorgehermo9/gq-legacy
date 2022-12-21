@@ -1,0 +1,6 @@
+{
+  "persona": {
+    "edad": 30,
+    "nombre": "John Doe"
+  }
+}

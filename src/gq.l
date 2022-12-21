@@ -57,6 +57,36 @@ key ({letters}|"_"){alphanumeric}*
 	return NULLV;
 }
 
+"!" {
+	colno++;
+	return NOT;
+}
+
+"~" {
+	colno++;
+	return TILDE;
+}
+
+"^" {
+	colno++;
+	return CARET;
+}
+
+"<" {
+	colno++;
+	return LT;
+}
+
+">" {
+	colno++;
+	return GT;
+}
+
+"=" {
+	colno++;
+	return EQ;
+}
+
 {key} {
 	KeyInfo key_info;
 	key_info.name = new string(yytext);
@@ -137,6 +167,11 @@ key ({letters}|"_"){alphanumeric}*
 	yylval.arg_value_val = arg_value;
 	colno+=strlen(yytext);
 	return FLOATV;
+}
+
+#.* {
+	// Ignore comments in lexer
+	colno+=strlen(yytext);
 }
 
 \n  {colno=1;lineno++;}

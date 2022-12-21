@@ -1,4 +1,3 @@
-(new: true) {
-    name
-    new
-  }
+{
+  products(quantity: >1)
+}

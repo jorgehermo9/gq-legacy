@@ -20,6 +20,19 @@ using namespace std;
 
 enum ArgumentType { STRING, INT, FLOAT, BOOL, NULLT };
 
+enum ArgumentOperation {
+  CONTAINS_OP,
+  NOT_CONTAINS_OP,
+  STARTS_WITH_OP,
+  NOT_STARTS_WITH_OP,
+  LE_OP,
+  GE_OP,
+  EQ_OP,
+  NE_OP,
+  LT_OP,
+  GT_OP
+};
+
 typedef struct Location {
   int line;
   int col;
@@ -43,11 +56,13 @@ typedef struct KeyInfo {
 
 typedef struct Argument {
   KeyInfo info;
+  ArgumentOperation operation;
   ArgumentValue value;
 } Argument;
 
 typedef struct QueryKey {
   KeyInfo info;
+  string* alias;
   vector<Argument>* args;
 } QueryField;
 

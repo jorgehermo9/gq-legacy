@@ -1,0 +1,5 @@
+{
+  person { # A person
+    name # The name of the person
+  }
+}

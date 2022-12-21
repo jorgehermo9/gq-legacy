@@ -110,6 +110,111 @@ string get_type_error_message(ArgumentType type,
          "; not including item";
 }
 
+bool satisfies_operation_string(Query parent_query,
+                                string field,
+                                Argument arg) {
+  string value = *arg.value.v.str;
+  string key = *arg.info.name;
+  switch (arg.operation) {
+    case CONTAINS_OP:
+      return field.find(value) != string::npos;
+    case NOT_CONTAINS_OP:
+      return field.find(value) == string::npos;
+    case STARTS_WITH_OP:
+      return field.find(value) == 0;
+    case NOT_STARTS_WITH_OP:
+      return field.find(value) != 0;
+    case EQ_OP:
+      return field == value;
+    case NE_OP:
+      return field != value;
+    default:
+      print_error(parent_query,
+                  "operation not supported in type string in query argument " +
+                      CYAN(key));
+      return false;
+  }
+}
+
+bool satisfies_operation_int(Query parent_query, int field, Argument arg) {
+  int value = arg.value.v.i;
+  string key = *arg.info.name;
+  switch (arg.operation) {
+    case EQ_OP:
+      return field == value;
+    case NE_OP:
+      return field != value;
+    case GT_OP:
+      return field > value;
+    case GE_OP:
+      return field >= value;
+    case LT_OP:
+      return field < value;
+    case LE_OP:
+      return field <= value;
+    default:
+      print_error(parent_query,
+                  "operation not supported in type number in query argument " +
+                      CYAN(key));
+      return false;
+  }
+}
+
+bool satisfies_operation_float(Query parent_query, float field, Argument arg) {
+  float value = arg.value.v.f;
+  string key = *arg.info.name;
+  switch (arg.operation) {
+    case EQ_OP:
+      return field == value;
+    case NE_OP:
+      return field != value;
+    case GT_OP:
+      return field > value;
+    case GE_OP:
+      return field >= value;
+    case LT_OP:
+      return field < value;
+    case LE_OP:
+      return field <= value;
+    default:
+      print_error(parent_query,
+                  "operation not supported in type number in query argument " +
+                      CYAN(key));
+      return false;
+  }
+}
+
+bool satisfies_operation_bool(Query parent_query, bool field, Argument arg) {
+  bool value = arg.value.v.b;
+  string key = *arg.info.name;
+  switch (arg.operation) {
+    case EQ_OP:
+      return field == value;
+    case NE_OP:
+      return field != value;
+    default:
+      print_error(parent_query,
+                  "operation not supported in type boolean in query argument " +
+                      CYAN(key));
+      return false;
+  }
+}
+
+bool satisfies_operation_null(Query parent_query, json field, Argument arg) {
+  string key = *arg.info.name;
+  switch (arg.operation) {
+    case EQ_OP:
+      return field.is_null();
+    case NE_OP:
+      return !field.is_null();
+    default:
+      print_error(parent_query,
+                  "operation not supported in type null in query argument " +
+                      CYAN(key));
+      return false;
+  }
+}
+
 bool fulfill_arguments(json element, Query parent_query, string path) {
   vector<Argument>* args = parent_query.query_key.args;
   bool result = true;
@@ -137,7 +242,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
           continue;
         }
-        if (field != *arg.value.v.str) {
+        if (!satisfies_operation_string(parent_query, field, arg)) {
           result = false;
         }
         break;
@@ -149,7 +254,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
           continue;
         }
-        if (field != arg.value.v.i) {
+        if (!satisfies_operation_int(parent_query, field, arg)) {
           result = false;
         }
         break;
@@ -161,7 +266,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
           continue;
         }
-        if (field != arg.value.v.f) {
+        if (!satisfies_operation_float(parent_query, field, arg)) {
           result = false;
         }
         break;
@@ -173,14 +278,13 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
           continue;
         }
-        if (field != arg.value.v.b) {
+        if (!satisfies_operation_bool(parent_query, field, arg)) {
           result = false;
         }
         break;
       case NULLT:
-        if (!field.is_null()) {
+        if (!satisfies_operation_null(parent_query, field, arg)) {
           result = false;
-          continue;
         }
         break;
     }
@@ -233,12 +337,19 @@ json filter(Query query, json data, string path) {
 
     for (auto child : *query.children) {
       string target_key = *child.query_key.info.name;
+      string alias_key = *child.query_key.alias;
       if (!data.contains(target_key)) {
         string error_message = "Could not find key " + CYAN(target_key) +
                                " in " + CYAN(local_path);
         print_error(query, error_message);
       }
-      local_data[target_key] =
+
+      if (local_data.contains(alias_key)) {
+        string error_message = "duplicated key " + CYAN(alias_key);
+        print_error(query, error_message);
+      }
+
+      local_data[alias_key] =
           filter(child, data[target_key], path + "." + target_key);
     }
   } else {
