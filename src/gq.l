@@ -27,6 +27,36 @@ key ({letters}|"_"){alphanumeric}*
 
 %%
 
+"true" {
+	ArgumentValue arg_value;
+	arg_value.type = BOOL;
+	arg_value.v.b = true;
+
+	yylval.arg_value_val = arg_value;
+	colno+=strlen(yytext);
+	return BOOLV;
+}
+
+"false" {
+	ArgumentValue arg_value;
+	arg_value.type = BOOL;
+	arg_value.v.b = false;
+
+	yylval.arg_value_val = arg_value;
+	colno+=strlen(yytext);
+	return BOOLV;
+}
+
+"null" {
+	ArgumentValue arg_value;
+	arg_value.type = NULLT;
+	arg_value.v.n = NULL;
+
+	yylval.arg_value_val = arg_value;
+	colno+=strlen(yytext);
+	return NULLV;
+}
+
 {key} {
 	KeyInfo key_info;
 	key_info.name = new string(yytext);
@@ -109,15 +139,11 @@ key ({letters}|"_"){alphanumeric}*
 	return FLOATV;
 }
 
-
-
-
-
 \n  {colno=1;lineno++;}
 [\t ] {colno++;}
 . {
-	cerr << RED <<"Lexical error" <<RESET<< " at position " <<RED<< lineno
-	<<":"<<colno<< RESET<<": invalid character '" << yytext << "'" << endl;
+	cerr << RED("Lexical error") << " at position " << RED(to_string(lineno)
+	+ ":" + to_string(colno)) <<": invalid character '" << yytext << "'" << endl;
 	exit(1);
 }
 

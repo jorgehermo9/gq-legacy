@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m at [1;31m4:3[0;0m: missing closing bracket '}' for root query

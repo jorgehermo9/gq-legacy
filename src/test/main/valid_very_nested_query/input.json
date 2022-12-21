@@ -1,0 +1,12 @@
+{
+  "person": {
+    "name": "John",
+    "age": 30,
+    "address": {
+      "street": {
+        "name": "Main",
+        "number": 100
+      }
+    }
+  }
+}

@@ -1,0 +1,1 @@
+[1;31mError[0;0m in [1;36mroot query[0;0m declared at [1;31m1:15[0;0m: query arguments are only allowed in array data

@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "p1",
+      "price": 10.0,
+      "quantity": 1,
+      "new": true,
+      "titular": null
+    },
+    {
+      "id": 2,
+      "name": "p2",
+      "price": 20.0,
+      "quantity": 2,
+      "new": false,
+      "titular": "Myself"
+    },
+    {
+      "id": 3,
+      "name": "p3",
+      "price": 30.0,
+      "quantity": 3,
+      "new": true,
+      "titular": "Myself"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "products": [
+    [
+      {
+        "name": "Product 1",
+        "new": true
+      }
+    ],
+    {
+      "name": "Product 3",
+      "new": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m in query [1;36m'foo'[0;0m at [1;31m2:2[0;0m: missing closing bracket '}'

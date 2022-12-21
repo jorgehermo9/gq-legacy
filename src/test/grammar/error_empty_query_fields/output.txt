@@ -1,0 +1,2 @@
+[1;31mSyntax error[0;0m in query [1;36m'foo'[0;0m at [1;31m2:3[0;0m: query fields cannot be empty
+[1;32mHint:[0;0m in order to get all fields, remove brackets

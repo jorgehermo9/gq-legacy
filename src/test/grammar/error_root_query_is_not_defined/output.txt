@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m at [1;31m2:1[0;0m: root query is not defined

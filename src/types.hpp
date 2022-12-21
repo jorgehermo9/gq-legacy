@@ -5,14 +5,20 @@ using namespace std;
 #ifndef __TYPES
 #define __TYPES
 
-#define RED string("\033[1;31m")
-#define ORANGE string("\033[1;33m")
-#define GREEN string("\033[1;32m")
-#define RESET string("\033[0;0m")
-#define RESETBOLD string("\033[1;1m")
-#define CYAN string("\033[1;36m")
+#define REDC string("\033[1;31m")
+#define YELLOWC string("\033[1;33m")
+#define GREENC string("\033[1;32m")
+#define RESETC string("\033[0;0m")
+#define RESETBOLDC string("\033[1;1m")
+#define CYANC string("\033[1;36m")
 
-enum ArgumentType { STRING, INT, FLOAT };
+#define RED(A) REDC + A + RESETC
+#define YELLOW(A) YELLOWC + A + RESETC
+#define GREEN(A) GREENC + A + RESETC
+#define RESETBOLD(A) RESETBOLDC + A + RESETC
+#define CYAN(A) CYANC + A + RESETC
+
+enum ArgumentType { STRING, INT, FLOAT, BOOL, NULLT };
 
 typedef struct Location {
   int line;
@@ -25,6 +31,8 @@ typedef struct ArgumentValue {
     string* str;
     int i;
     float f;
+    bool b;
+    void* n;
   } v;
 } ArgumentValue;
 

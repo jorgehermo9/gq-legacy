@@ -1,0 +1,7 @@
+{
+  products(titular: null) {
+    id
+    name
+		titular
+  }
+}

@@ -1,0 +1,7 @@
+{
+  products(price: 30.0) {
+    id
+    name
+    price
+  }
+}

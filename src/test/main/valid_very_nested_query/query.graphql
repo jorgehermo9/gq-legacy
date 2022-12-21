@@ -1,0 +1,10 @@
+{
+  person {
+    address {
+      street {
+        name
+        number
+      }
+    }
+  }
+}

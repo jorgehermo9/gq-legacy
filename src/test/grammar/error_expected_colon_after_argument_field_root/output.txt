@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m in [1;36mroot query[0;0m at [1;31m1:4[0;0m: expected ':' after argument field '[1;36ma[0;0m' declared at [1;31m1:2[0;0m

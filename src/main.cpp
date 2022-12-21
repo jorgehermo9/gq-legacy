@@ -39,35 +39,75 @@ void print_query(Query query) {
   do_print_query(query, 0);
 }
 
-void print_error(Query query, string error_message) {
-  if (query.query_key.info.name == NULL) {  // Root query
-    cerr << RED << "Error " << RESET << "in root query declared at " << RED
-         << query.query_key.info.at.line << ":" << query.query_key.info.at.col
-         << RESET << ": " << error_message << endl;
-    exit(1);
+string get_query_name(Query query) {
+  if (query.query_key.info.name != NULL) {
+    return "query " + CYAN("'" + *query.query_key.info.name + "'");
+  } else {
+    return CYAN("root query");
   }
+}
 
-  cerr << RED << "Error " << RESET << "in query " << CYAN << "'"
-       << *query.query_key.info.name << "'" << RESET << " declared at " << RED
-       << query.query_key.info.at.line << ":" << query.query_key.info.at.col
-       << RESET << ": " << error_message << endl;
+void print_error(Query query, string error_message) {
+  string query_name = get_query_name(query);
+  cerr << RED("Error") << " in " << query_name << " declared at "
+       << RED(to_string(query.query_key.info.at.line) + ":" +
+              to_string(query.query_key.info.at.col))
+       << ": " << error_message << endl;
   exit(1);
 }
 
 void print_warning(Query query, string warning_message) {
-  if (query.query_key.info.name == NULL) {  // Root query
-    cerr << ORANGE << "Warning " << RESET << "in root query declared at "
-         << ORANGE << query.query_key.info.at.line << ":"
-         << query.query_key.info.at.col << RESET << ": " << warning_message
-         << endl;
-    return;
-  }
+  string query_name = get_query_name(query);
+  cerr << YELLOW("Warning") << " in " << query_name << " declared at "
+       << YELLOW(to_string(query.query_key.info.at.line) + ":" +
+                 to_string(query.query_key.info.at.col))
+       << ": " << warning_message << endl;
+}
 
-  cerr << ORANGE << "Warning " << RESET << "in query " << CYAN << "'"
-       << *query.query_key.info.name << "'" << RESET << " declared at "
-       << ORANGE << query.query_key.info.at.line << ":"
-       << query.query_key.info.at.col << RESET << ": " << warning_message
-       << endl;
+string string_of_type(ArgumentType type) {
+  switch (type) {
+    case STRING:
+      return "string";
+    case INT:
+      return "number";
+    case FLOAT:
+      return "number";
+    case BOOL:
+      return "boolean";
+    case NULLT:
+      return "null";
+    default:
+      return "unknown";
+  }
+}
+
+string string_type_of_json(json element) {
+  if (element.is_string()) {
+    return "a string";
+  } else if (element.is_number()) {
+    return "a number";
+  } else if (element.is_boolean()) {
+    return "a boolean";
+  } else if (element.is_null()) {
+    return "a null";
+  } else if (element.is_object()) {
+    return "an object";
+  } else if (element.is_array()) {
+    return "an array";
+  } else {
+    return "unknown";
+  }
+}
+
+string get_type_error_message(ArgumentType type,
+                              json field,
+                              string path,
+                              string key) {
+  string type_str = string_of_type(type);
+  string type_json = string_type_of_json(field);
+  return "query argument " + CYAN(key) + " is a " + type_str + " but field " +
+         CYAN(key) + " at " + CYAN(path) + " is " + type_json +
+         "; not including item";
 }
 
 bool fulfill_arguments(json element, Query parent_query, string path) {
@@ -80,9 +120,9 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
   for (Argument arg : *args) {
     string key = *arg.info.name;
     if (!element.contains(key)) {
-      print_warning(parent_query, "query argument " + CYAN + key + RESET +
-                                      " not found in element at " + CYAN +
-                                      path + RESET);
+      print_warning(parent_query, "query argument " + CYAN(key) +
+                                      " not found in element at " + CYAN(path) +
+                                      "; not including item");
       result = false;
       continue;
     }
@@ -91,9 +131,11 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
     switch (arg.value.type) {
       case STRING:
         if (!field.is_string()) {
-          print_error(parent_query, "query argument " + CYAN + key + RESET +
-                                        " is a string but field " + CYAN + key + RESET + "at " +
-                                        CYAN + path + RESET + " is not a string" );
+          string error_message =
+              get_type_error_message(arg.value.type, field, path, key);
+          print_warning(parent_query, error_message);
+          result = false;
+          continue;
         }
         if (field != *arg.value.v.str) {
           result = false;
@@ -101,9 +143,11 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
         break;
       case INT:
         if (!field.is_number()) {
-          print_error(parent_query, "query argument " + CYAN + key + RESET +
-                                        " is an number but field " + CYAN + key + RESET + "at " +
-                                        CYAN + path + RESET + " is not an number" );
+          string error_message =
+              get_type_error_message(arg.value.type, field, path, key);
+          print_warning(parent_query, error_message);
+          result = false;
+          continue;
         }
         if (field != arg.value.v.i) {
           result = false;
@@ -111,12 +155,32 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
         break;
       case FLOAT:
         if (!field.is_number()) {
-          print_error(parent_query, "query argument " + CYAN + key + RESET +
-                                        " is a number but field " + CYAN + key + RESET + "at " +
-                                        CYAN + path + RESET + " is not a number" );
+          string error_message =
+              get_type_error_message(arg.value.type, field, path, key);
+          print_warning(parent_query, error_message);
+          result = false;
+          continue;
         }
         if (field != arg.value.v.f) {
           result = false;
+        }
+        break;
+      case BOOL:
+        if (!field.is_boolean()) {
+          string error_message =
+              get_type_error_message(arg.value.type, field, path, key);
+          print_warning(parent_query, error_message);
+          result = false;
+          continue;
+        }
+        if (field != arg.value.v.b) {
+          result = false;
+        }
+        break;
+      case NULLT:
+        if (!field.is_null()) {
+          result = false;
+          continue;
         }
         break;
     }
@@ -134,24 +198,34 @@ json filter(Query query, json data, string path) {
     local_path = ".";
   }
 
-  // Return all fields only if data is an object
+  if (!data.is_array() && query.query_key.args != NULL) {
+    print_error(query, "query arguments are only allowed in array data");
+  }
+
+  // Return all fields only if data is an object, cause arrays must be filtered
   if (query.children == NULL && !data.is_array()) {
     return data;
   }
 
   if (data.is_array()) {
     local_data = json::array();
+    // Discard arguments in children
+    Query children_query = query;
+    children_query.query_key.args = NULL;
 
     int acc = 0;
     for (auto element : data) {
       string element_path = local_path + "[" + to_string(acc) + "]";
       acc++;
 
-      if (!fulfill_arguments(element, query, element_path)) {
+      // In arrays pass the arguments to its children if they are also arrays
+      if (!element.is_array() &&
+          !fulfill_arguments(element, query, element_path)) {
         continue;
       }
 
-      local_data.push_back(filter(query, element, element_path));
+      Query element_query = element.is_array() ? query : children_query;
+      local_data.push_back(filter(element_query, element, element_path));
     }
 
   } else if (data.is_object()) {
@@ -160,8 +234,8 @@ json filter(Query query, json data, string path) {
     for (auto child : *query.children) {
       string target_key = *child.query_key.info.name;
       if (!data.contains(target_key)) {
-        string error_message =
-            "Could not find key " + target_key + " in " + local_path + "";
+        string error_message = "Could not find key " + CYAN(target_key) +
+                               " in " + CYAN(local_path);
         print_error(query, error_message);
       }
       local_data[target_key] =
@@ -171,7 +245,7 @@ json filter(Query query, json data, string path) {
     // if data is not an array or an object AND has children in the query, its
     // an error
     string error_message =
-        "Query specifies fields, but " + local_path + " is not an object";
+        "Query specifies fields, but " + CYAN(local_path) + " is not an object";
     print_error(query, error_message);
   }
 
@@ -248,6 +322,10 @@ int main(int argc, char* argv[]) {
   } else if (json_file != "") {
     // read json data from file
     ifstream f(json_file);
+    if (!f.is_open()) {
+      cerr << "Error: json file " << json_file << " not found" << endl;
+      exit(1);
+    }
     data = json::parse(f);
   } else if (url != "") {
     data = get_json_url(url);

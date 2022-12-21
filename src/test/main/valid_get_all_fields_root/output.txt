@@ -1,0 +1,26 @@
+{
+  "description": "A collection of products",
+  "name": "Products",
+  "products": [
+    {
+      "category": "Category 1",
+      "id": 1,
+      "name": "Product 1",
+      "price": 100,
+      "tags": [
+        "Tag 1",
+        "Tag 2"
+      ]
+    },
+    {
+      "category": "Category 2",
+      "id": 2,
+      "name": "Product 2",
+      "price": 200,
+      "tags": [
+        "Tag 3",
+        "Tag 4"
+      ]
+    }
+  ]
+}

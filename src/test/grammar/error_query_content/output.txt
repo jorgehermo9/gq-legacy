@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m in query [1;36m'user'[0;0m at [1;31m3:2[0;0m: error in query content

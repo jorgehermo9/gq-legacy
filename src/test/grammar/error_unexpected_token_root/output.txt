@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m in [1;36mroot query[0;0m at [1;31m1:5[0;0m: unexpected token

@@ -1,0 +1,9 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "p1",
+      "new": true
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+[1;31mError[0;0m in query [1;36m'name'[0;0m declared at [1;31m3:3[0;0m: Query specifies fields, but [1;36m.person.name[0;0m is not an object

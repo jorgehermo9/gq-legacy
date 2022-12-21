@@ -1,0 +1,7 @@
+{
+  products(new: true) {
+    id
+    name
+		new
+  }
+}

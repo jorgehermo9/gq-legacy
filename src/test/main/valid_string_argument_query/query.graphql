@@ -1,0 +1,6 @@
+{
+  products(name: "p2") {
+    id
+    name
+  }
+}
