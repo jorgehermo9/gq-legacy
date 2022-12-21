@@ -21,4 +21,7 @@ todos los campos del json.
 
 ## TODO
 
-Meterle filtros a la root query
+Aliases
+Warning cuando haya campos repetidos debido a los alias (o no alias), se guarda el último definido xd
+
+Meter operaciones en los argumentos (mayor que, menor que, contains...)
