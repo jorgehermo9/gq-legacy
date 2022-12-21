@@ -137,21 +137,11 @@ operation:
 	| EQ { $$ = EQ_OP; }
 
 arg_value: 
-	STRINGV {
-		$$ = $1;
-	}
-	| INTV {
-		$$ = $1;
-	}
-	| FLOATV {
-		$$ = $1;
-	}
-	| BOOLV {
-		$$ = $1;
-	}
-	| NULLV {
-		$$ = $1;
-	}
+	STRINGV { $$ = $1; }
+	| INTV { $$ = $1; }
+	| FLOATV { $$ = $1; }
+	| BOOLV { $$ = $1; }
+	| NULLV { $$ = $1; }
 
 argument: 
 	KEY COLON operation arg_value {
@@ -164,18 +154,13 @@ argument:
 	| KEY COLON error {
 		string message = "invalid argument value in field '" + CYAN(*$1.name) + 
 		"' declared at " + RED(get_loc_string($1.at));
-
 		update_source_error(message);
 
-		// Throw error token, since if only the tokens KEY and COLON are present (empty value),
-		// throw error would no throw by default (since error token could match here, and it is not
-		// necessary to be in a state error)
-		YYERROR;
+		YYERROR; // Throw error sice it's not thrown by default
 	}
 	| KEY error {
 		string message = "expected ':' after argument field '" + CYAN(*$1.name) + 
 			"' declared at "+ RED(get_loc_string($1.at));
-
 		update_source_error(message);
 
 		YYERROR;
@@ -197,7 +182,6 @@ argument_list:
 			+ CYAN(*last_argument.info.name)
 			+ "' declared at "+ RED(get_loc_string(last_argument.info.at))
 			+ "\n" + GREEN("Hint:") + " arguments must be separated by ','";
-
 		update_source_error(message);
 
 		YYERROR;
@@ -207,7 +191,6 @@ argument_list:
 		string message = "unexpected token after argument field '"
 				+ CYAN(*last_argument.info.name) +
 				"' declared at " + RED(get_loc_string(last_argument.info.at));
-
 		update_source_error(message);
 
 		YYERROR;
@@ -307,14 +290,14 @@ query:
 	
 %%
 
+void yyerror (Query* result_query, char const *error) {
+	/* error_at_position(string(error), lineno, colno); */
+}
+
 void update_source_error(string new_message) {
 	source_error_message = source_error_message == NULL ?
 		new string(new_message) :
 		source_error_message;
-}
-
-void yyerror (Query* result_query, char const *error) {
-	/* error_at_position(string(error), lineno, colno); */
 }
 
 string get_loc_string(Location at) {

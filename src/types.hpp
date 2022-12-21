@@ -11,12 +11,14 @@ using namespace std;
 #define RESETC string("\033[0;0m")
 #define RESETBOLDC string("\033[1;1m")
 #define CYANC string("\033[1;36m")
+#define PURPLEC string("\033[1;35m")
 
 #define RED(A) REDC + A + RESETC
 #define YELLOW(A) YELLOWC + A + RESETC
 #define GREEN(A) GREENC + A + RESETC
 #define RESETBOLD(A) RESETBOLDC + A + RESETC
 #define CYAN(A) CYANC + A + RESETC
+#define PURPLE(A) PURPLEC + A + RESETC
 
 enum ArgumentType { STRING, INT, FLOAT, BOOL, NULLT };
 

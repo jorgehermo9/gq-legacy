@@ -1,25 +1,34 @@
-{
-  "products": [
-    {
-      "id": 1,
-      "name": "Product 1",
-      "price": 10.0,
-      "quantity": 1,
-      "new": true
-    },
-    {
-      "id": 2,
-      "name": "Product 2",
-      "price": 20.0,
-      "quantity": 2,
-      "new": false
-    },
-    {
-      "id": 3,
-      "name": "Product 3",
-      "price": 30.0,
-      "quantity": 3,
-      "new": true
-    }
-  ]
-}
+[
+  {
+    "id": 1,
+    "name": "coca cola",
+    "price": 10.0,
+    "quantity": 1,
+    "new": true,
+    "titular": null
+  },
+  {
+    "id": 2,
+    "name": "pepsi max",
+    "price": 20.0,
+    "quantity": 2,
+    "new": false,
+    "titular": "Myself"
+  },
+  {
+    "id": 3,
+    "name": "sprite",
+    "price": 30.0,
+    "quantity": 3,
+    "new": true,
+    "titular": "Myself"
+  },
+  {
+    "id": 4,
+    "name": "pepsi",
+    "price": 40.0,
+    "quantity": 4,
+    "new": false,
+    "titular": null
+  }
+]

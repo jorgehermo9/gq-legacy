@@ -1,0 +1,6 @@
+{
+  products(titular: ~null) {
+    name
+    titular
+  }
+}

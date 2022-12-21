@@ -1,3 +1,5 @@
-{
-  products(quantity: >1)
-}
+(name: 1, price: >10.0, titular: !=null) {
+    name
+    price
+    titular
+  }

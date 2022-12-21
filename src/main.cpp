@@ -81,19 +81,46 @@ string string_of_type(ArgumentType type) {
   }
 }
 
+string string_of_operation(ArgumentOperation op) {
+  switch (op) {
+    case CONTAINS_OP:
+      return "contains";
+    case NOT_CONTAINS_OP:
+      return "not contains";
+    case STARTS_WITH_OP:
+      return "starts with";
+    case NOT_STARTS_WITH_OP:
+      return "not starts with";
+    case LE_OP:
+      return "<=";
+    case LT_OP:
+      return "<";
+    case GE_OP:
+      return ">=";
+    case GT_OP:
+      return ">";
+    case EQ_OP:
+      return "=";
+    case NE_OP:
+      return "!=";
+    default:
+      return "unknown";
+  }
+}
+
 string string_type_of_json(json element) {
   if (element.is_string()) {
-    return "a string";
+    return "string";
   } else if (element.is_number()) {
-    return "a number";
+    return "number";
   } else if (element.is_boolean()) {
-    return "a boolean";
+    return "boolean";
   } else if (element.is_null()) {
-    return "a null";
+    return "null";
   } else if (element.is_object()) {
-    return "an object";
+    return "object";
   } else if (element.is_array()) {
-    return "an array";
+    return "array";
   } else {
     return "unknown";
   }
@@ -105,9 +132,16 @@ string get_type_error_message(ArgumentType type,
                               string key) {
   string type_str = string_of_type(type);
   string type_json = string_type_of_json(field);
-  return "query argument " + CYAN(key) + " is a " + type_str + " but field " +
-         CYAN(key) + " at " + CYAN(path) + " is " + type_json +
-         "; not including item";
+  return "query argument " + CYAN(key) + " is of type " + PURPLE(type_str) +
+         " but " + CYAN(path + "." + key) + " is of type " +
+         PURPLE(type_json) + "; not including item";
+}
+
+string get_operation_error_message(Argument arg) {
+  string op_str = string_of_operation(arg.operation);
+  string type_str = string_of_type(arg.value.type);
+  return "operation " + PURPLE(op_str) + " not supported in type " +
+         PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
 }
 
 bool satisfies_operation_string(Query parent_query,
@@ -129,9 +163,7 @@ bool satisfies_operation_string(Query parent_query,
     case NE_OP:
       return field != value;
     default:
-      print_error(parent_query,
-                  "operation not supported in type string in query argument " +
-                      CYAN(key));
+      print_error(parent_query, get_operation_error_message(arg));
       return false;
   }
 }
@@ -153,9 +185,7 @@ bool satisfies_operation_int(Query parent_query, int field, Argument arg) {
     case LE_OP:
       return field <= value;
     default:
-      print_error(parent_query,
-                  "operation not supported in type number in query argument " +
-                      CYAN(key));
+      print_error(parent_query, get_operation_error_message(arg));
       return false;
   }
 }
@@ -177,9 +207,7 @@ bool satisfies_operation_float(Query parent_query, float field, Argument arg) {
     case LE_OP:
       return field <= value;
     default:
-      print_error(parent_query,
-                  "operation not supported in type number in query argument " +
-                      CYAN(key));
+      print_error(parent_query, get_operation_error_message(arg));
       return false;
   }
 }
@@ -193,9 +221,7 @@ bool satisfies_operation_bool(Query parent_query, bool field, Argument arg) {
     case NE_OP:
       return field != value;
     default:
-      print_error(parent_query,
-                  "operation not supported in type boolean in query argument " +
-                      CYAN(key));
+      print_error(parent_query, get_operation_error_message(arg));
       return false;
   }
 }
@@ -208,9 +234,7 @@ bool satisfies_operation_null(Query parent_query, json field, Argument arg) {
     case NE_OP:
       return !field.is_null();
     default:
-      print_error(parent_query,
-                  "operation not supported in type null in query argument " +
-                      CYAN(key));
+      print_error(parent_query, get_operation_error_message(arg));
       return false;
   }
 }

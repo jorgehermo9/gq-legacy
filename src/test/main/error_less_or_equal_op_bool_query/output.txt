@@ -1,0 +1,1 @@
+[1;31mError[0;0m in query [1;36m'products'[0;0m declared at [1;31m2:3[0;0m: operation [1;35m<=[0;0m not supported in type [1;35mboolean[0;0m in query argument [1;36mnew[0;0m

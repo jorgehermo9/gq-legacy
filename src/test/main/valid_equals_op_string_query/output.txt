@@ -1,0 +1,8 @@
+{
+  "products": [
+    {
+      "name": "pepsi",
+      "price": 40.0
+    }
+  ]
+}

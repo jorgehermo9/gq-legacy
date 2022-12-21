@@ -1,0 +1,12 @@
+{
+  "products": [
+    {
+      "name": "pepsi max",
+      "new": false
+    },
+    {
+      "name": "pepsi",
+      "new": false
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-[1;33mWarning[0;0m in query [1;36m'items'[0;0m declared at [1;33m2:3[0;0m: query argument [1;36mid[0;0m is a number but field [1;36mid[0;0m at [1;36m.items[0][0;0m is a string; not including item
-[1;33mWarning[0;0m in query [1;36m'items'[0;0m declared at [1;33m2:3[0;0m: query argument [1;36mid[0;0m is a number but field [1;36mid[0;0m at [1;36m.items[1][0;0m is a string; not including item
+[1;33mWarning[0;0m in query [1;36m'items'[0;0m declared at [1;33m2:3[0;0m: query argument [1;36mid[0;0m is of type [1;35mnumber[0;0m but [1;36m.items[0].id[0;0m is of type [1;35mstring[0;0m; not including item
+[1;33mWarning[0;0m in query [1;36m'items'[0;0m declared at [1;33m2:3[0;0m: query argument [1;36mid[0;0m is of type [1;35mnumber[0;0m but [1;36m.items[1].id[0;0m is of type [1;35mstring[0;0m; not including item
 {
   "items": []
 }

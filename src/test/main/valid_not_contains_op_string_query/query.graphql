@@ -1,0 +1,6 @@
+{
+  products(name: !~"2") {
+    name
+    price
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "products": [
+    {
+      "name": "pepsi max",
+      "price": 20.0,
+      "titular": "Myself"
+    }
+  ]
+}

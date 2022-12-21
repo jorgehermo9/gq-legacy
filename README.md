@@ -27,3 +27,7 @@ Warning cuando haya campos repetidos debido a los alias (o no alias), se guarda 
 Meter operaciones en los argumentos (mayor que, menor que, contains...)
 
 Numeros negativos
+
+Comparar case insensitive? con modifiers en cada operacion?
+
+Hacer los errores de las operaciones en la gramatica

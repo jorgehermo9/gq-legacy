@@ -5,6 +5,5 @@ for f in $(ls test/grammar); do
 done
 
 for f in $(ls test/main); do
-	./gq "test/main/$f/query.graphql" -j "test/main/$f/example.json" &>"test/main/$f/output.txt"
-	mv "test/main/$f/example.json" "test/main/$f/input.json"
+	./gq "test/main/$f/query.graphql" -j "test/main/$f/input.json" &>"test/main/$f/output.txt"
 done

@@ -1,0 +1,7 @@
+{
+  products(quantity: >1) {
+    name
+    price
+    quantity
+  }
+}

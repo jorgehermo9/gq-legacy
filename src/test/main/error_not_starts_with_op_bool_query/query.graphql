@@ -1,0 +1,6 @@
+{
+  products(new: !^true) {
+    name
+    new
+  }
+}

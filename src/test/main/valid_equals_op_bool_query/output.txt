@@ -1,0 +1,12 @@
+{
+  "products": [
+    {
+      "name": "coca cola",
+      "new": true
+    },
+    {
+      "name": "sprite",
+      "new": true
+    }
+  ]
+}
