@@ -2,9 +2,9 @@
 
 # Exmple:
 # From src folder, execute
-# ./test/main/generate_grammar_test.sh input.graphql {test_name}
+# ./test/generate_lexer_test.sh input.graphql {test_name}
 
-test_dir="test/grammar/$2"
+test_dir="test/lexer/$2"
 
 mkdir $test_dir
 cp $1 $test_dir/query.graphql

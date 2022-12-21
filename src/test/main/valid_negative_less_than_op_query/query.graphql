@@ -1,0 +1,6 @@
+{
+  products(benefit: <-5) {
+    name
+    benefit
+  }
+}

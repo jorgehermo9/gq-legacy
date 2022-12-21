@@ -11,9 +11,20 @@ passed=0
 
 echo -e "Running all tests...\n"
 
-for f in $(ls test/grammar); do
-	echo "{}" | ./gq "test/grammar/$f/query.graphql" &>/tmp/test.txt
-	if diff -q /tmp/test.txt "test/grammar/$f/output.txt" &>/dev/null; then
+for f in $(ls test/lexer); do
+	echo "{}" | ./gq "test/lexer/$f/query.graphql" &>/tmp/test.txt
+	if diff -q /tmp/test.txt "test/lexer/$f/output.txt" &>/dev/null; then
+		echo -e "${G}[OK]${W}   $f"
+		passed=$((passed + 1))
+	else
+		echo -e "${R}[FAIL]${W} $f"
+	fi
+	total=$((total + 1))
+done
+
+for f in $(ls test/parser); do
+	echo "{}" | ./gq "test/parser/$f/query.graphql" &>/tmp/test.txt
+	if diff -q /tmp/test.txt "test/parser/$f/output.txt" &>/dev/null; then
 		echo -e "${G}[OK]${W}   $f"
 		passed=$((passed + 1))
 	else
@@ -33,4 +44,9 @@ for f in $(ls test/main); do
 	total=$((total + 1))
 done
 
-echo -e "\n${G}Passed: $passed/${total}${W}"
+echo -e "\nPassed: ${B}$passed/$total${W}"
+if [ $passed -eq $total ]; then
+	echo -e "${G}All tests passed!${W}"
+else
+	echo -e "${R}Failed: $((total - passed))${W}"
+fi

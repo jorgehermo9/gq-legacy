@@ -133,8 +133,8 @@ string get_type_error_message(ArgumentType type,
   string type_str = string_of_type(type);
   string type_json = string_type_of_json(field);
   return "query argument " + CYAN(key) + " is of type " + PURPLE(type_str) +
-         " but " + CYAN(path + "." + key) + " is of type " +
-         PURPLE(type_json) + "; not including item";
+         " but " + CYAN(path + "." + key) + " is of type " + PURPLE(type_json) +
+         "; not including item";
 }
 
 string get_operation_error_message(Argument arg) {
@@ -168,7 +168,7 @@ bool satisfies_operation_string(Query parent_query,
   }
 }
 
-bool satisfies_operation_int(Query parent_query, int field, Argument arg) {
+bool satisfies_operation_int(Query parent_query, json field, Argument arg) {
   int value = arg.value.v.i;
   string key = *arg.info.name;
   switch (arg.operation) {
@@ -190,7 +190,7 @@ bool satisfies_operation_int(Query parent_query, int field, Argument arg) {
   }
 }
 
-bool satisfies_operation_float(Query parent_query, float field, Argument arg) {
+bool satisfies_operation_float(Query parent_query, json field, Argument arg) {
   float value = arg.value.v.f;
   string key = *arg.info.name;
   switch (arg.operation) {

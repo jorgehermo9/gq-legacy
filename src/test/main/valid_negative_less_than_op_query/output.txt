@@ -1,0 +1,12 @@
+{
+  "products": [
+    {
+      "benefit": -5.5,
+      "name": "pepsi max"
+    },
+    {
+      "benefit": -10.45,
+      "name": "pepsi"
+    }
+  ]
+}

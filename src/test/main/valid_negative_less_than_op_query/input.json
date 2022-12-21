@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "coca cola",
+      "price": 10.0,
+      "benefit": 5.5
+    },
+    {
+      "id": 2,
+      "name": "pepsi max",
+      "price": 20.0,
+      "benefit": -5.5
+    },
+    {
+      "id": 3,
+      "name": "sprite",
+      "price": 30.0,
+      "benefit": 0.0
+    },
+    {
+      "id": 4,
+      "name": "pepsi",
+      "price": 40.0,
+      "benefit": -10.45
+    }
+  ]
+}

@@ -22,7 +22,6 @@ Location get_location() {
 
 letters [a-zA-Z]
 alphanumeric [a-zA-Z0-9_]
-
 key ({letters}|"_"){alphanumeric}*
 
 %%
@@ -31,9 +30,9 @@ key ({letters}|"_"){alphanumeric}*
 	ArgumentValue arg_value;
 	arg_value.type = BOOL;
 	arg_value.v.b = true;
-
 	yylval.arg_value_val = arg_value;
-	colno+=strlen(yytext);
+
+	colno += strlen(yytext);
 	return BOOLV;
 }
 
@@ -41,9 +40,9 @@ key ({letters}|"_"){alphanumeric}*
 	ArgumentValue arg_value;
 	arg_value.type = BOOL;
 	arg_value.v.b = false;
-
 	yylval.arg_value_val = arg_value;
-	colno+=strlen(yytext);
+
+	colno += strlen(yytext);
 	return BOOLV;
 }
 
@@ -51,51 +50,28 @@ key ({letters}|"_"){alphanumeric}*
 	ArgumentValue arg_value;
 	arg_value.type = NULLT;
 	arg_value.v.n = NULL;
-
 	yylval.arg_value_val = arg_value;
-	colno+=strlen(yytext);
+
+	colno += strlen(yytext);
 	return NULLV;
 }
 
-"!" {
-	colno++;
-	return NOT;
-}
-
-"~" {
-	colno++;
-	return TILDE;
-}
-
-"^" {
-	colno++;
-	return CARET;
-}
-
-"<" {
-	colno++;
-	return LT;
-}
-
-">" {
-	colno++;
-	return GT;
-}
-
-"=" {
-	colno++;
-	return EQ;
-}
+"!" { colno++; return NOT; }
+"~" { colno++; return TILDE; }
+"^" { colno++; return CARET; }
+"<" { colno++; return LT; }
+">" { colno++; return GT; }
+"=" { colno++; return EQ; }
+":" { colno++; return COLON; }
+"," { colno++; return COMMA; }
 
 {key} {
 	KeyInfo key_info;
 	key_info.name = new string(yytext);
 	key_info.at = get_location();
-
-
-	colno+=strlen(yytext);
-
 	yylval.key_info_val = key_info;
+
+	colno += strlen(yytext);
 	return KEY;
 }
 
@@ -123,62 +99,49 @@ key ({letters}|"_"){alphanumeric}*
 	return RPAREN;
 }
 
-":" { 
-	colno++;
-	return COLON;
-}
-
-"," { 
-	colno++;
-	return COMMA;
-}
-
-
 "\""[^"]*"\"" {
 	string* text_string = new string(yytext);
-	string* text = new string(text_string->substr(1,text_string->length()-2));
+	string* text = new string(text_string->substr(1, text_string->length()-2));
+
 	ArgumentValue arg_value;
 	arg_value.type = STRING;
 	arg_value.v.str = text;
-
 	yylval.arg_value_val = arg_value;
-	colno+=strlen(yytext);
+
+	colno += strlen(yytext);
 	return STRINGV;
 }
 
-
-[0-9]+ {
+"-"?[0-9]+ {
 	ArgumentValue arg_value;
 	arg_value.type = INT;
 	arg_value.v.i = atoi(yytext);
-
 	yylval.arg_value_val = arg_value;
 
 	colno+=strlen(yytext);
 	return INTV;
 }
 
-
-[0-9]+\.[0-9]+ {
+"-"?[0-9]+\.[0-9]+ {
 	ArgumentValue arg_value;
 	arg_value.type = FLOAT;
 	arg_value.v.f = atof(yytext);
-
 	yylval.arg_value_val = arg_value;
-	colno+=strlen(yytext);
+
+	colno += strlen(yytext);
 	return FLOATV;
 }
 
 #.* {
 	// Ignore comments in lexer
-	colno+=strlen(yytext);
+	colno += strlen(yytext);
 }
 
-\n  {colno=1;lineno++;}
-[\t ] {colno++;}
+\n { colno = 1; lineno++; }
+[\t ] { colno++; }
 . {
 	cerr << RED("Lexical error") << " at position " << RED(to_string(lineno)
-	+ ":" + to_string(colno)) <<": invalid character '" << yytext << "'" << endl;
+	+ ":" + to_string(colno)) <<": invalid character '" << RED(yytext) << "'" << endl;
 	exit(1);
 }
 

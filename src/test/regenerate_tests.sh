@@ -1,7 +1,7 @@
 #!/bin/bash
 
-for f in $(ls test/grammar); do
-	echo "{}" | ./gq "test/grammar/$f/query.graphql" &>"test/grammar/$f/output.txt"
+for f in $(ls test/parser); do
+	echo "{}" | ./gq "test/parser/$f/query.graphql" &>"test/parser/$f/output.txt"
 done
 
 for f in $(ls test/main); do
