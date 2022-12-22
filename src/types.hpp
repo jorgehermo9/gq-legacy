@@ -73,4 +73,6 @@ typedef struct Query {
   vector<Query>* children;
 } Query;
 
+string string_of_type(ArgumentType type);
+string string_of_operation(ArgumentOperation op);
 #endif

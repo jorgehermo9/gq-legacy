@@ -151,12 +151,19 @@ argument:
 		arg.value = $4;
 		$$ = arg;
 	}
+	|KEY COLON error arg_value {
+		string message = "invalid operation in field '" + CYAN(*$1.name) + 
+			"' declared at " + RED(get_loc_string($1.at));
+		update_source_error(message);
+
+		YYERROR; // Throw error sice it's not thrown by default
+	}
 	| KEY COLON error {
 		string message = "invalid argument value in field '" + CYAN(*$1.name) + 
 		"' declared at " + RED(get_loc_string($1.at));
 		update_source_error(message);
 
-		YYERROR; // Throw error sice it's not thrown by default
+		YYERROR;
 	}
 	| KEY error {
 		string message = "expected ':' after argument field '" + CYAN(*$1.name) + 

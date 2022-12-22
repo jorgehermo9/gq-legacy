@@ -1,0 +1,1 @@
+[1;31mSyntax error[0;0m in query [1;36m'name'[0;0m at [1;31m2:3[0;0m: invalid operation in field '[1;36mid[0;0m' declared at [1;31m2:8[0;0m

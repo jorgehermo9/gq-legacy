@@ -1,3 +1,6 @@
-{
-  *
+(a: "hola")
+  person: a(id: 1) {
+    name
+    address
+  }
 }
