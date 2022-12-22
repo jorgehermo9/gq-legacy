@@ -1,0 +1,1 @@
+[1;31mError:[0;0m query file [1;36mtest/main/error_query_file_not_found/query.graphql[0;0m not found

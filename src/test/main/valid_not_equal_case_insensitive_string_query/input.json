@@ -16,7 +16,7 @@
     },
     {
       "id": 3,
-      "name": "NOT A PRODUCT THREE",
+      "name": "PRODUCT THREE",
       "price": 30.0,
       "quantity": 3,
       "new": true

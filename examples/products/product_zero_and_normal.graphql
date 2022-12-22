@@ -1,0 +1,5 @@
+{
+	bill{
+		products: zero(name: ~"zero")
+	}
+}

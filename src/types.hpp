@@ -20,9 +20,9 @@ using namespace std;
 #define CYAN(A) CYANC + A + RESETC
 #define PURPLE(A) PURPLEC + A + RESETC
 
-enum ArgumentType { STRING, INT, FLOAT, BOOL, NULLT };
+enum Type { STRING, INT, FLOAT, BOOL, NULLT };
 
-enum ArgumentOperation {
+enum Operation {
   CONTAINS_OP,
   NOT_CONTAINS_OP,
   STARTS_WITH_OP,
@@ -35,13 +35,23 @@ enum ArgumentOperation {
   GT_OP
 };
 
+enum OperationModifier {
+  NONE,
+  CASE_INSENSITIVE,
+};
+
+typedef struct ArgumentOperation {
+  Operation op;
+  OperationModifier modifier;
+} ArgumentOperation;
+
 typedef struct Location {
   int line;
   int col;
 } Location;
 
 typedef struct ArgumentValue {
-  ArgumentType type;
+  Type type;
   union {
     string* str;
     int i;
@@ -73,6 +83,7 @@ typedef struct Query {
   vector<Query>* children;
 } Query;
 
-string string_of_type(ArgumentType type);
-string string_of_operation(ArgumentOperation op);
+string string_of_type(Type type);
+string string_of_operation(Operation op);
+string string_of_modifier(OperationModifier modifier);
 #endif

@@ -10,7 +10,12 @@ bool satisfies_operation_string(Query parent_query,
                                 Argument arg) {
   string value = *arg.value.v.str;
   string key = *arg.info.name;
-  switch (arg.operation) {
+
+  if (arg.operation.modifier == CASE_INSENSITIVE) {
+    transform(field.begin(), field.end(), field.begin(), ::tolower);
+    transform(value.begin(), value.end(), value.begin(), ::tolower);
+  }
+  switch (arg.operation.op) {
     case CONTAINS_OP:
       return field.find(value) != string::npos;
     case NOT_CONTAINS_OP:
@@ -30,9 +35,12 @@ bool satisfies_operation_string(Query parent_query,
 }
 
 bool satisfies_operation_int(Query parent_query, json field, Argument arg) {
+  if (arg.operation.modifier == CASE_INSENSITIVE) {
+    print_error(parent_query, get_modifier_error_message(arg));
+  }
   int value = arg.value.v.i;
   string key = *arg.info.name;
-  switch (arg.operation) {
+  switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
     case NE_OP:
@@ -52,9 +60,12 @@ bool satisfies_operation_int(Query parent_query, json field, Argument arg) {
 }
 
 bool satisfies_operation_float(Query parent_query, json field, Argument arg) {
+  if (arg.operation.modifier == CASE_INSENSITIVE) {
+    print_error(parent_query, get_modifier_error_message(arg));
+  }
   float value = arg.value.v.f;
   string key = *arg.info.name;
-  switch (arg.operation) {
+  switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
     case NE_OP:
@@ -74,9 +85,12 @@ bool satisfies_operation_float(Query parent_query, json field, Argument arg) {
 }
 
 bool satisfies_operation_bool(Query parent_query, bool field, Argument arg) {
+  if (arg.operation.modifier == CASE_INSENSITIVE) {
+    print_error(parent_query, get_modifier_error_message(arg));
+  }
   bool value = arg.value.v.b;
   string key = *arg.info.name;
-  switch (arg.operation) {
+  switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
     case NE_OP:
@@ -88,8 +102,11 @@ bool satisfies_operation_bool(Query parent_query, bool field, Argument arg) {
 }
 
 bool satisfies_operation_null(Query parent_query, json field, Argument arg) {
+  if (arg.operation.modifier == CASE_INSENSITIVE) {
+    print_error(parent_query, get_modifier_error_message(arg));
+  }
   string key = *arg.info.name;
-  switch (arg.operation) {
+  switch (arg.operation.op) {
     case EQ_OP:
       return field.is_null();
     case NE_OP:

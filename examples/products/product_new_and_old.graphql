@@ -1,0 +1,12 @@
+{
+  bill {
+    products: old_products(new: false) {
+      name
+      new
+    }
+    products: new_products(new: true) {
+      name
+      new
+    }
+  }
+}

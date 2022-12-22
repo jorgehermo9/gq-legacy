@@ -21,8 +21,4 @@ todos los campos del json.
 
 ## TODO
 
-Numeros negativos
-
-Comparar case insensitive? con modifiers en cada operacion?
-
-Hacer los errores de las operaciones en la gramatica
+Mejorar colores errores del main

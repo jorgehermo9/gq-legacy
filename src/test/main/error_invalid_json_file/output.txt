@@ -1,0 +1,1 @@
+[1;31mError:[0;0m json file [1;36mtest/main/error_invalid_json_file/input.json[0;0m is not valid, reason: [json.exception.parse_error.101] parse error at line 16, column 5: syntax error while parsing object key - unexpected '}'; expected string literal

@@ -12,7 +12,7 @@
       "name": "PRODUCT TWO",
       "price": 20.0,
       "quantity": 2,
-      "new": false
+      "new": false,
     },
     {
       "id": 3,

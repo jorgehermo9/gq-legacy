@@ -71,6 +71,7 @@ json get_json_url(string url) {
          << ", response code: " << *httpCode << endl;
     exit(1);
   }
+
   return json::parse(*httpData);
 }
 
@@ -108,23 +109,37 @@ int main(int argc, char* argv[]) {
     // read json data from stdin
     data = json::parse(std::cin);
   } else if (json_file != "" && url != "") {
-    cerr << "Error: Cannot use both url and json file" << endl;
+    cerr << RED("Error:") << " cannot use both url and json file" << endl;
     exit(1);
   } else if (json_file != "") {
     // read json data from file
     ifstream f(json_file);
     if (!f.is_open()) {
-      cerr << "Error: json file " << json_file << " not found" << endl;
+      cerr << RED("Error:") << " json file " << CYAN(json_file) << " not found"
+           << endl;
       exit(1);
     }
-    data = json::parse(f);
+    try {
+      data = json::parse(f);
+    } catch (json::parse_error& e) {
+      cerr << RED("Error:") << " json file " << CYAN(json_file)
+           << " is not valid, reason: " << e.what() << endl;
+      exit(1);
+    }
   } else if (url != "") {
-    data = get_json_url(url);
+    try {
+      data = get_json_url(url);
+    } catch (json::parse_error& e) {
+      cerr << RED("Error:") << " json from url " << CYAN(url)
+           << " is not valid, reason: " << e.what() << endl;
+      exit(1);
+    }
   }
 
   yyin = fopen(query_file.c_str(), "r");
   if (yyin == NULL) {
-    cerr << "Error: query file " << query_file << " not found" << endl;
+    cerr << RED("Error:") << " query file " << CYAN(query_file) << " not found"
+         << endl;
     exit(1);
   }
 

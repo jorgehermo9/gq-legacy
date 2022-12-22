@@ -1,6 +1,6 @@
 #include "types.hpp"
 
-string string_of_type(ArgumentType type) {
+string string_of_type(Type type) {
   switch (type) {
     case STRING:
       return "string";
@@ -17,7 +17,7 @@ string string_of_type(ArgumentType type) {
   }
 }
 
-string string_of_operation(ArgumentOperation op) {
+string string_of_operation(Operation op) {
   switch (op) {
     case CONTAINS_OP:
       return "contains";
@@ -39,6 +39,17 @@ string string_of_operation(ArgumentOperation op) {
       return "=";
     case NE_OP:
       return "!=";
+    default:
+      return "unknown";
+  }
+}
+
+string string_of_modifier(OperationModifier mod) {
+  switch (mod) {
+    case NONE:
+      return "no modifier";
+    case CASE_INSENSITIVE:
+      return "case insensitive";
     default:
       return "unknown";
   }

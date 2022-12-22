@@ -1,0 +1,13 @@
+{
+  "products": [
+    {
+      "name": "PRODUCT ONE"
+    },
+    {
+      "name": "PRODUCT TWO"
+    },
+    {
+      "name": "PRODUCT THREE"
+    }
+  ]
+}

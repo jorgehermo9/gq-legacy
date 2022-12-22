@@ -1,0 +1,5 @@
+{
+  products(quantity: >*2){
+    name
+  }
+}

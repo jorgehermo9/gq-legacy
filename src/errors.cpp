@@ -45,10 +45,7 @@ string string_type_of_json(json element) {
   }
 }
 
-string get_type_error_message(ArgumentType type,
-                              json field,
-                              string path,
-                              string key) {
+string get_type_error_message(Type type, json field, string path, string key) {
   string type_str = string_of_type(type);
   string type_json = string_type_of_json(field);
   return "query argument " + CYAN(key) + " is of type " + PURPLE(type_str) +
@@ -57,8 +54,14 @@ string get_type_error_message(ArgumentType type,
 }
 
 string get_operation_error_message(Argument arg) {
-  string op_str = string_of_operation(arg.operation);
+  string op_str = string_of_operation(arg.operation.op);
   string type_str = string_of_type(arg.value.type);
   return "operation " + PURPLE(op_str) + " not supported in type " +
+         PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
+}
+string get_modifier_error_message(Argument arg) {
+  string mod_str = string_of_modifier(arg.operation.modifier);
+  string type_str = string_of_type(arg.value.type);
+  return "modifier " + PURPLE(mod_str) + " not supported with type " +
          PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
 }

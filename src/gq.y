@@ -39,10 +39,12 @@ string get_loc_string(Location loc);
 	Argument arg_val;
 	vector<Argument>* arg_list_val;
 	string* string_val;
+	OperationModifier modifier_val;
+	Operation op_val;
 }
 %define parse.error verbose
 
-%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ
+%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ STAR
 %token <key_info_val> KEY
 
 %token <loc_val> LBRACKET RBRACKET LPAREN RPAREN
@@ -54,7 +56,9 @@ string get_loc_string(Location loc);
 %type <arg_val> argument
 %type <arg_list_val> argument_list arguments
 %type <string_val> alias
-%type <arg_op_val> operation
+%type <op_val> operation
+%type <modifier_val> modifier
+%type <arg_op_val> arg_operation
 %type <arg_value_val> arg_value
 
 %start S
@@ -91,7 +95,7 @@ S: arguments LBRACKET query_content RBRACKET YYEOF {
 		string error_message = "missing closing bracket '}' for root query";
 		error_at_position(error_message, at);
 	}
-	| query_content RBRACKET YYEOF {
+	| arguments query_content RBRACKET YYEOF {
 		Location at = { .line = 1, .col = 1 };
 		string error_message = "missing opening bracket '{' for root query";
 		error_at_position(error_message, at);
@@ -123,6 +127,10 @@ S: arguments LBRACKET query_content RBRACKET YYEOF {
 		error_in_root(at, *source_error_message);
 	}
 
+modifier:
+	{$$ = NONE; }
+	| STAR { $$=CASE_INSENSITIVE; }
+
 operation:
 	{ $$ = EQ_OP; }
 	| TILDE { $$ = CONTAINS_OP; }
@@ -136,6 +144,14 @@ operation:
 	| NOT EQ { $$ = NE_OP; }
 	| EQ { $$ = EQ_OP; }
 
+arg_operation:
+	operation modifier {
+	ArgumentOperation arg_op;
+	arg_op.op = $1;
+	arg_op.modifier = $2;
+	$$ = arg_op;
+	}
+
 arg_value: 
 	STRINGV { $$ = $1; }
 	| INTV { $$ = $1; }
@@ -144,7 +160,7 @@ arg_value:
 	| NULLV { $$ = $1; }
 
 argument: 
-	KEY COLON operation arg_value {
+	KEY COLON arg_operation arg_value {
 		Argument arg;
 		arg.info = $1;
 		arg.operation = $3;

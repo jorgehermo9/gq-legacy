@@ -64,6 +64,7 @@ key ({letters}|"_"){alphanumeric}*
 "=" { colno++; return EQ; }
 ":" { colno++; return COLON; }
 "," { colno++; return COMMA; }
+"*" { colno++; return STAR; }
 
 {key} {
 	KeyInfo key_info;
