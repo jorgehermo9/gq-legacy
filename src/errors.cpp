@@ -59,6 +59,7 @@ string get_operation_error_message(Argument arg) {
   return "operation " + PURPLE(op_str) + " not supported in type " +
          PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
 }
+
 string get_modifier_error_message(Argument arg) {
   string mod_str = string_of_modifier(arg.operation.modifier);
   string type_str = string_of_type(arg.value.type);

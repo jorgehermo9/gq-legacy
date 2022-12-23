@@ -124,6 +124,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
   if (args == NULL) {
     return true;
   }
+
   for (Argument arg : *args) {
     string key = *arg.info.name;
     if (!element.contains(key)) {
@@ -148,6 +149,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
         }
         break;
+
       case INT:
         if (!field.is_number()) {
           string error_message =
@@ -160,6 +162,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
         }
         break;
+
       case FLOAT:
         if (!field.is_number()) {
           string error_message =
@@ -172,6 +175,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
         }
         break;
+
       case BOOL:
         if (!field.is_boolean()) {
           string error_message =
@@ -184,6 +188,7 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
           result = false;
         }
         break;
+
       case NULLT:
         if (!satisfies_operation_null(parent_query, field, arg)) {
           result = false;
