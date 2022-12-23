@@ -167,7 +167,7 @@ argument:
 		arg.value = $4;
 		$$ = arg;
 	}
-	|KEY COLON error arg_value {
+	| KEY COLON error arg_value {
 		string message = "invalid operation in field '" + CYAN(*$1.name) + 
 			"' declared at " + RED(get_loc_string($1.at));
 		update_source_error(message);
