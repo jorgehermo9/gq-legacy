@@ -58,3 +58,19 @@ string string_of_modifier(OperationModifier mod) {
       return "unknown";
   }
 }
+
+string join_key_path(stack<KeyInfo> key_path) {
+  if (key_path.empty()) {
+    return ".";
+  }
+
+  KeyInfo first_key_info = key_path.top();
+  key_path.pop();
+  string key_path_str = *first_key_info.name;
+  while (!key_path.empty()) {
+    KeyInfo key_info = key_path.top();
+    key_path.pop();
+    key_path_str = key_path_str + "." + *key_info.name;
+  }
+  return key_path_str;
+}

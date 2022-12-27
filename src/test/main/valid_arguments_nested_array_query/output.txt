@@ -1,0 +1,39 @@
+[
+  {
+    "products": [
+      {
+        "id": 1,
+        "name": "PRODUCT ONE",
+        "new": true,
+        "price": 10.0,
+        "quantity": 1,
+        "tags": [
+          "tag1",
+          "tag2"
+        ]
+      },
+      {
+        "id": 2,
+        "name": "PRODUCT TWO",
+        "new": false,
+        "price": 20.0,
+        "quantity": 2,
+        "tags": [
+          "tag1",
+          "tag2"
+        ]
+      },
+      {
+        "id": 3,
+        "name": "NOT A PRODUCT THREE",
+        "new": true,
+        "price": 30.0,
+        "quantity": 3,
+        "tags": [
+          "tag2",
+          "tag3"
+        ]
+      }
+    ]
+  }
+]

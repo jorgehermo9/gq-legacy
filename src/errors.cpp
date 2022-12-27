@@ -56,13 +56,15 @@ string get_type_error_message(Type type, json field, string path, string key) {
 string get_operation_error_message(Argument arg) {
   string op_str = string_of_operation(arg.operation.op);
   string type_str = string_of_type(arg.value.type);
+  string key_path = join_key_path(*arg.key_path);
   return "operation " + PURPLE(op_str) + " not supported in type " +
-         PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
+         PURPLE(type_str) + " in query argument " + CYAN(key_path);
 }
 
 string get_modifier_error_message(Argument arg) {
   string mod_str = string_of_modifier(arg.operation.modifier);
   string type_str = string_of_type(arg.value.type);
+  string key_path = join_key_path(*arg.key_path);
   return "modifier " + PURPLE(mod_str) + " not supported with type " +
-         PURPLE(type_str) + " in query argument " + CYAN(*arg.info.name);
+         PURPLE(type_str) + " in query argument " + CYAN(key_path);
 }

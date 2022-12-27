@@ -66,6 +66,7 @@ key ({letters}|"_"){alphanumeric}*
 "," { colno++; return COMMA; }
 "*" { colno++; return STAR; }
 "$" { colno++; return DOLLAR; }
+"." { colno++; return DOT; }
 
 {key} {
 	KeyInfo key_info;

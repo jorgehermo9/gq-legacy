@@ -1,3 +1,4 @@
+#include <stack>
 #include <string>
 #include <vector>
 using namespace std;
@@ -69,7 +70,7 @@ typedef struct KeyInfo {
 } KeyInfo;
 
 typedef struct Argument {
-  KeyInfo info;
+  stack<KeyInfo>* key_path;
   ArgumentOperation operation;
   ArgumentValue value;
 } Argument;
@@ -88,4 +89,5 @@ typedef struct Query {
 string string_of_type(Type type);
 string string_of_operation(Operation op);
 string string_of_modifier(OperationModifier modifier);
+string join_key_path(stack<KeyInfo> key_path);
 #endif

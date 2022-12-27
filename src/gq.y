@@ -41,10 +41,11 @@ string get_loc_string(Location loc);
 	string* string_val;
 	OperationModifier modifier_val;
 	Operation op_val;
+	stack<KeyInfo>* key_stack_val;
 }
 %define parse.error verbose
 
-%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ STAR DOLLAR
+%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ STAR DOLLAR DOT
 %token <key_info_val> KEY
 
 %token <loc_val> LBRACKET RBRACKET LPAREN RPAREN
@@ -60,6 +61,7 @@ string get_loc_string(Location loc);
 %type <modifier_val> modifier
 %type <arg_op_val> arg_operation
 %type <arg_value_val> arg_value
+%type <key_stack_val> arg_key_path
 
 %start S
 %%
@@ -161,31 +163,48 @@ arg_value:
 	| BOOLV { $$ = $1; }
 	| NULLV { $$ = $1; }
 
+arg_key_path:
+	KEY {
+		stack<KeyInfo>* key_stack = new stack<KeyInfo>();
+		key_stack->push($1);
+		$$ = key_stack;
+	}
+	| KEY DOT arg_key_path {
+		$3->push($1);
+		$$ = $3;
+	}
+
 argument: 
-	KEY COLON arg_operation arg_value {
+	arg_key_path COLON arg_operation arg_value {
 		Argument arg;
-		arg.info = $1;
+		arg.key_path = $1;
 		arg.operation = $3;
 		arg.value = $4;
 		$$ = arg;
 	}
-	| KEY COLON error arg_value {
-		string message = "invalid operation in field '" + CYAN(*$1.name) + 
-			"' declared at " + RED(get_loc_string($1.at));
+	| arg_key_path COLON error arg_value {
+		string key_path = join_key_path(*$1);
+		Location first_location = $1->top().at;
+		string message = "invalid operation in field '" + CYAN(key_path) + 
+			"' declared at " + RED(get_loc_string(first_location));
 		update_source_error(message);
 
 		YYERROR; // Throw error sice it's not thrown by default
 	}
-	| KEY COLON error {
-		string message = "invalid argument value in field '" + CYAN(*$1.name) + 
-		"' declared at " + RED(get_loc_string($1.at));
+	| arg_key_path COLON error {
+		string key_path = join_key_path(*$1);
+		Location first_location = $1->top().at;
+		string message = "invalid argument value in field '" + CYAN(key_path) + 
+		"' declared at " + RED(get_loc_string(first_location));
 		update_source_error(message);
 
 		YYERROR;
 	}
-	| KEY error {
-		string message = "expected ':' after argument field '" + CYAN(*$1.name) + 
-			"' declared at "+ RED(get_loc_string($1.at));
+	| arg_key_path error {
+		string key_path = join_key_path(*$1);
+		Location first_location = $1->top().at;
+		string message = "expected ':' after argument field '" + CYAN(key_path) + 
+			"' declared at "+ RED(get_loc_string(first_location));
 		update_source_error(message);
 
 		YYERROR;
@@ -203,9 +222,11 @@ argument_list:
 	}
 	| argument_list error {
 		Argument last_argument = $1->back();
+		string key_path = join_key_path(*last_argument.key_path);
+		Location first_location = last_argument.key_path->top().at;
 		string message = "unexpected token after argument field '"
-			+ CYAN(*last_argument.info.name)
-			+ "' declared at "+ RED(get_loc_string(last_argument.info.at))
+			+ CYAN(key_path)
+			+ "' declared at "+ RED(get_loc_string(first_location))
 			+ "\n" + GREEN("Hint:") + " arguments must be separated by ','";
 		update_source_error(message);
 
@@ -213,9 +234,11 @@ argument_list:
 	}
 	| argument_list COMMA error {
 		Argument last_argument = $1->back();
+		string key_path = join_key_path(*last_argument.key_path);
+		Location first_location = last_argument.key_path->top().at;
 		string message = "unexpected token after argument field '"
-				+ CYAN(*last_argument.info.name) +
-				"' declared at " + RED(get_loc_string(last_argument.info.at));
+				+ CYAN(key_path) +
+				"' declared at " + RED(get_loc_string(first_location));
 		update_source_error(message);
 
 		YYERROR;

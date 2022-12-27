@@ -9,8 +9,6 @@ bool satisfies_operation_string(Query parent_query,
                                 string field,
                                 Argument arg) {
   string value = *arg.value.v.str;
-  string key = *arg.info.name;
-
   if (arg.operation.modifier == CASE_INSENSITIVE) {
     transform(field.begin(), field.end(), field.begin(), ::tolower);
     transform(value.begin(), value.end(), value.begin(), ::tolower);
@@ -43,7 +41,6 @@ bool satisfies_operation_int(Query parent_query, json field, Argument arg) {
     print_error(parent_query, get_modifier_error_message(arg));
   }
   int value = arg.value.v.i;
-  string key = *arg.info.name;
   switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
@@ -68,7 +65,6 @@ bool satisfies_operation_float(Query parent_query, json field, Argument arg) {
     print_error(parent_query, get_modifier_error_message(arg));
   }
   float value = arg.value.v.f;
-  string key = *arg.info.name;
   switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
@@ -93,7 +89,6 @@ bool satisfies_operation_bool(Query parent_query, bool field, Argument arg) {
     print_error(parent_query, get_modifier_error_message(arg));
   }
   bool value = arg.value.v.b;
-  string key = *arg.info.name;
   switch (arg.operation.op) {
     case EQ_OP:
       return field == value;
@@ -109,7 +104,6 @@ bool satisfies_operation_null(Query parent_query, json field, Argument arg) {
   if (arg.operation.modifier == CASE_INSENSITIVE) {
     print_error(parent_query, get_modifier_error_message(arg));
   }
-  string key = *arg.info.name;
   switch (arg.operation.op) {
     case EQ_OP:
       return field.is_null();
@@ -118,6 +112,124 @@ bool satisfies_operation_null(Query parent_query, json field, Argument arg) {
     default:
       print_error(parent_query, get_operation_error_message(arg));
       return false;
+  }
+}
+
+bool check_field_value(Argument arg,
+                       json field,
+                       Query parent_query,
+                       string path,
+                       string key_path) {
+  switch (arg.value.type) {
+    case STRING:
+      if (!field.is_string()) {
+        string error_message =
+            get_type_error_message(arg.value.type, field, path, key_path);
+        print_warning(parent_query, error_message);
+        return false;
+      }
+      if (!satisfies_operation_string(parent_query, field, arg)) {
+        return false;
+      }
+      break;
+
+    case INT:
+      if (!field.is_number()) {
+        string error_message =
+            get_type_error_message(arg.value.type, field, path, key_path);
+        print_warning(parent_query, error_message);
+        return false;
+      }
+      if (!satisfies_operation_int(parent_query, field, arg)) {
+        return false;
+      }
+      break;
+
+    case FLOAT:
+      if (!field.is_number()) {
+        string error_message =
+            get_type_error_message(arg.value.type, field, path, key_path);
+        print_warning(parent_query, error_message);
+        return false;
+      }
+      if (!satisfies_operation_float(parent_query, field, arg)) {
+        return false;
+      }
+      break;
+
+    case BOOL:
+      if (!field.is_boolean()) {
+        string error_message =
+            get_type_error_message(arg.value.type, field, path, key_path);
+        print_warning(parent_query, error_message);
+        return false;
+      }
+      if (!satisfies_operation_bool(parent_query, field, arg)) {
+        return false;
+      }
+      break;
+
+    case NULLT:
+      if (!satisfies_operation_null(parent_query, field, arg)) {
+        return false;
+      }
+      break;
+  }
+  return true;
+}
+
+bool fulfill_argument(Argument arg,
+                      stack<KeyInfo> arg_path,
+                      json element,
+                      Query parent_query,
+                      string path,
+                      string key_path) {
+  if (arg_path.empty()) {
+    if (element.is_array()) {
+      // If one element of the array satisfies the query, then the whole item
+      // will be added
+      bool array_result = false;
+      int acc = 0;
+      for (auto array_item : element) {
+        if (check_field_value(arg, array_item, parent_query,
+                              path + "[" + to_string(acc) + "]", key_path)) {
+          array_result = true;
+        }
+        acc++;
+      }
+      return array_result;
+    } else {
+      return check_field_value(arg, element, parent_query, path, key_path);
+    }
+  }
+
+  KeyInfo firstPath = arg_path.top();
+  arg_path.pop();
+  string key = *firstPath.name;
+
+  if (!element.contains(key)) {
+    print_warning(parent_query, "query argument " + CYAN(key) +
+                                    " not found in element at " + CYAN(path) +
+                                    "; not including item");
+    return false;
+  }
+
+  json field = element[key];
+
+  if (field.is_array()) {
+    bool array_result = false;
+    int acc = 0;
+    for (auto array_item : field) {
+      if (fulfill_argument(arg, arg_path, array_item, parent_query,
+                           path + "[" + to_string(acc) + "]", key_path)) {
+        array_result = true;
+      }
+      acc++;
+    }
+    return array_result;
+  } else {
+    return fulfill_argument(arg, arg_path, field, parent_query,
+                            path + "." + key, key_path);
   }
 }
 
@@ -130,75 +242,10 @@ bool fulfill_arguments(json element, Query parent_query, string path) {
   }
 
   for (Argument arg : *args) {
-    string key = *arg.info.name;
-    if (!element.contains(key)) {
-      print_warning(parent_query, "query argument " + CYAN(key) +
-                                      " not found in element at " + CYAN(path) +
-                                      "; not including item");
-      result = false;
-      continue;
-    }
-
-    json field = element[key];
-    switch (arg.value.type) {
-      case STRING:
-        if (!field.is_string()) {
-          string error_message =
-              get_type_error_message(arg.value.type, field, path, key);
-          print_warning(parent_query, error_message);
-          result = false;
-          continue;
-        }
-        if (!satisfies_operation_string(parent_query, field, arg)) {
-          result = false;
-        }
-        break;
-
-      case INT:
-        if (!field.is_number()) {
-          string error_message =
-              get_type_error_message(arg.value.type, field, path, key);
-          print_warning(parent_query, error_message);
-          result = false;
-          continue;
-        }
-        if (!satisfies_operation_int(parent_query, field, arg)) {
-          result = false;
-        }
-        break;
-
-      case FLOAT:
-        if (!field.is_number()) {
-          string error_message =
-              get_type_error_message(arg.value.type, field, path, key);
-          print_warning(parent_query, error_message);
-          result = false;
-          continue;
-        }
-        if (!satisfies_operation_float(parent_query, field, arg)) {
-          result = false;
-        }
-        break;
-
-      case BOOL:
-        if (!field.is_boolean()) {
-          string error_message =
-              get_type_error_message(arg.value.type, field, path, key);
-          print_warning(parent_query, error_message);
-          result = false;
-          continue;
-        }
-        if (!satisfies_operation_bool(parent_query, field, arg)) {
-          result = false;
-        }
-        break;
-
-      case NULLT:
-        if (!satisfies_operation_null(parent_query, field, arg)) {
-          result = false;
-        }
-        break;
-    }
+    stack<KeyInfo> arg_path = *arg.key_path;
+    string key_path = join_key_path(arg_path);
+    result = result && fulfill_argument(arg, arg_path, element, parent_query,
+                                        path, key_path);
   }
   return result;
 }
@@ -217,7 +264,8 @@ json do_filter(Query query, json data, string path) {
     print_error(query, "query arguments are only allowed in array data");
   }
 
-  // Return all fields only if data is an object, cause arrays must be filtered
+  // Return all fields only if data is an object, cause arrays must be
+  // filtered
   if (query.children == NULL && !data.is_array()) {
     return data;
   }
