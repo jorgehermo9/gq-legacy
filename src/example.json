@@ -5,21 +5,33 @@
       "name": "PRODUCT ONE",
       "price": 10.0,
       "quantity": 1,
-      "new": true
+      "new": true,
+      "tags": [
+        "tag1",
+        "tag2"
+      ]
     },
     {
       "id": 2,
       "name": "PRODUCT TWO",
       "price": 20.0,
       "quantity": 2,
-      "new": false
+      "new": false,
+      "tags": [
+        "tag1",
+        "tag2"
+      ]
     },
     {
       "id": 3,
       "name": "NOT A PRODUCT THREE",
       "price": 30.0,
       "quantity": 3,
-      "new": true
+      "new": true,
+      "tags": [
+        "tag2",
+        "tag3"
+      ]
     }
   ]
 }

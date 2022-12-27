@@ -1,6 +1,3 @@
 {
-  products(new: !$null) {
-    name
-    price
-  }
+  products(tags.name: "good")
 }
