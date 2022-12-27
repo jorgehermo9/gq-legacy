@@ -71,11 +71,11 @@ src/
 - En el directorio `lib` se encuentran las librerías que hemos utilizado para la práctica. En este caso, la librería `argparse.hpp`
   nos permite parsear los argumentos de la línea de comandos, y la librería `json.hpp` nos permite parsear el JSON de entrada.
 
-- En el directorio `test` se encuentran los tests de la práctica (en total 122). En este caso, los tests están divididos en tres directorios:
+- En el directorio `test` se encuentran los tests de la práctica (en total 123). En este caso, los tests están divididos en tres directorios:
 
   - `lexer`: tests para el lexer. En total hay 1 test de error.
   - `parser`: tests para la gramática. En total hay 20 tests de error.
-  - `main`: tests para el programa principal. En total hay 91 tests, de los cuales 42 son de error, 5 son de warning y 58 son de ejecución correcta.
+  - `main`: tests para el programa principal. En total hay 92 tests, de los cuales 42 son de error, 5 son de warning y 59 son de ejecución correcta.
 
   Además, se proporciona un script `run_all_tests.sh` que ejecuta todos los tests de forma automática.
 
