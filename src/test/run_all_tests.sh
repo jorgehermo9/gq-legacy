@@ -8,8 +8,6 @@ W="\e[0m"
 
 total=0
 passed=0
-echo -e "Compiling...\n"
-make &>/dev/null || echo -e "${R}Compilation failed!${W}"
 echo -e "Running all tests...\n"
 
 for f in $(ls test/lexer); do

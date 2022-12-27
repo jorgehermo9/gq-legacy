@@ -27,6 +27,10 @@ string string_of_operation(Operation op) {
       return "starts with";
     case NOT_STARTS_WITH_OP:
       return "not starts with";
+    case ENDS_WITH_OP:
+      return "ends with";
+    case NOT_ENDS_WITH_OP:
+      return "not ends with";
     case LE_OP:
       return "<=";
     case LT_OP:

@@ -27,6 +27,8 @@ gq: main.cpp filter.o parser.o lexer.o types.o errors.o
 run: gq
 	./gq
 
+test: gq
+	./test/run_all_tests.sh
+
 clean:
 	rm gq lex.yy.c gq.tab.c gq.tab.h parser.o lexer.o types.o errors.o filter.o
-

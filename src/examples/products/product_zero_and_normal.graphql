@@ -1,0 +1,10 @@
+{
+	bill{
+		products: zero(name: ~*"zero"){
+			name
+		}
+		products: normal(name: !~*"zero"){
+			name
+		}
+	}
+}

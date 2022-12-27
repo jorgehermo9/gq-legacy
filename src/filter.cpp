@@ -24,6 +24,10 @@ bool satisfies_operation_string(Query parent_query,
       return field.find(value) == 0;
     case NOT_STARTS_WITH_OP:
       return field.find(value) != 0;
+    case ENDS_WITH_OP:
+      return field.rfind(value) == field.size() - value.size();
+    case NOT_ENDS_WITH_OP:
+      return field.rfind(value) != field.size() - value.size();
     case EQ_OP:
       return field == value;
     case NE_OP:

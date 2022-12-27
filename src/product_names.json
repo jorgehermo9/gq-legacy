@@ -1,0 +1,30 @@
+{
+  "bill": {
+    "products": [
+      {
+        "name": "Coca Cola"
+      },
+      {
+        "name": "Pepsi"
+      },
+      {
+        "name": "Fanta"
+      },
+      {
+        "name": "Sprite"
+      },
+      {
+        "name": "Pepsi Max"
+      },
+      {
+        "name": "Fanta Zero"
+      },
+      {
+        "name": "Sprite Zero"
+      },
+      {
+        "name": "Coca Cola Zero"
+      }
+    ]
+  }
+}

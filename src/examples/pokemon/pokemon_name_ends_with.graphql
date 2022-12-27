@@ -1,0 +1,6 @@
+{
+	results(name: $"ir") {
+		name
+		url
+	}
+}

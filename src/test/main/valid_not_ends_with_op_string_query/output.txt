@@ -1,0 +1,10 @@
+{
+  "products": [
+    {
+      "name": "PRODUCT ONE"
+    },
+    {
+      "name": "NOT A PRODUCT THREE"
+    }
+  ]
+}

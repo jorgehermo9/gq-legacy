@@ -1,5 +1,5 @@
 {
-  products(new: !$null) {
+  products(new: !$true) {
     name
     price
   }

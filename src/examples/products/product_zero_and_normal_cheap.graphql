@@ -1,0 +1,10 @@
+{
+	bill{
+		products: zero(name: ~*"zero", price: <1.5){
+			name
+		}
+		products: normal(name: !~*"zero",price: <1.5){
+			name
+		}
+	}
+}

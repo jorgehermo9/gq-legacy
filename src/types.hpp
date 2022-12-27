@@ -27,6 +27,8 @@ enum Operation {
   NOT_CONTAINS_OP,
   STARTS_WITH_OP,
   NOT_STARTS_WITH_OP,
+  ENDS_WITH_OP,
+  NOT_ENDS_WITH_OP,
   LE_OP,
   GE_OP,
   EQ_OP,

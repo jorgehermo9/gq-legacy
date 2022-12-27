@@ -1,0 +1,8 @@
+{
+	stats(base_stat: >90) {
+		base_stat
+		stat {
+			name
+		}
+	}
+}

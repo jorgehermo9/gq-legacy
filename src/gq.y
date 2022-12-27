@@ -44,7 +44,7 @@ string get_loc_string(Location loc);
 }
 %define parse.error verbose
 
-%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ STAR
+%token YYEOF COLON COMMA NOT TILDE CARET LT GT EQ STAR DOLLAR
 %token <key_info_val> KEY
 
 %token <loc_val> LBRACKET RBRACKET LPAREN RPAREN
@@ -137,6 +137,8 @@ operation:
 	| NOT TILDE { $$ = NOT_CONTAINS_OP; }
 	| CARET { $$ = STARTS_WITH_OP; }
 	| NOT CARET { $$ = NOT_STARTS_WITH_OP; }
+	| DOLLAR { $$ = ENDS_WITH_OP; }
+	| NOT DOLLAR { $$ = NOT_ENDS_WITH_OP; }
 	| LT { $$ = LT_OP; }
 	| GT { $$ = GT_OP; }
 	| LT EQ { $$ = LE_OP; }
