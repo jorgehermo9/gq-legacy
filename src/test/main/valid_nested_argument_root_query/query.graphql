@@ -1,0 +1,4 @@
+(price.value: >=20){
+    name
+    price
+}

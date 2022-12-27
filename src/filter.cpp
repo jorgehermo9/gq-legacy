@@ -206,7 +206,14 @@ bool fulfill_argument(Argument arg,
   KeyInfo firstPath = arg_path.top();
   arg_path.pop();
   string key = *firstPath.name;
+  if (!element.is_object()) {
+    print_warning(parent_query, "query argument " + CYAN(key) +
+                                    " specifies a field, but " + CYAN(path) +
+                                    " is not of type " + PURPLE("object") +
+                                    "; not including item");
 
+    return false;
+  }
   if (!element.contains(key)) {
     print_warning(parent_query, "query argument " + CYAN(key) +
                                     " not found in element at " + CYAN(path) +
@@ -314,8 +321,8 @@ json do_filter(Query query, json data, string path) {
   } else {
     // if data is not an array or an object AND has children in the query, its
     // an error
-    string error_message =
-        "Query specifies fields, but " + CYAN(local_path) + " is not an object";
+    string error_message = "Query specifies fields, but " + CYAN(local_path) +
+                           " is not of type " + PURPLE("object");
     print_error(query, error_message);
   }
 

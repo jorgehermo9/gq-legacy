@@ -49,7 +49,7 @@ string get_type_error_message(Type type, json field, string path, string key) {
   string type_str = string_of_type(type);
   string type_json = string_type_of_json(field);
   return "query argument " + CYAN(key) + " is of type " + PURPLE(type_str) +
-         " but " + CYAN(path + "." + key) + " is of type " + PURPLE(type_json) +
+         " but " + CYAN(path) + " is of type " + PURPLE(type_json) +
          "; not including item";
 }
 

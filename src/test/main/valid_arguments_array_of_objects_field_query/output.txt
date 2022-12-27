@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Product 1",
-      "tags":[
+      "tags": [
         {
           "id": 1,
           "name": "tag1"
@@ -17,7 +17,7 @@
     {
       "id": 2,
       "name": "Product 2",
-      "tags":[
+      "tags": [
         {
           "id": 1,
           "name": "tag1"
@@ -25,20 +25,6 @@
         {
           "id": 2,
           "name": "tag2"
-        }
-      ]
-    },
-    {
-      "id": 3,
-      "name": "Product 3",
-      "tags":[
-        {
-          "id": 2,
-          "name": "tag2"
-        },
-        {
-          "id": 3,
-          "name": "tag3"
         }
       ]
     }

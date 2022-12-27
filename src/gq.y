@@ -182,6 +182,13 @@ argument:
 		arg.value = $4;
 		$$ = arg;
 	}
+	| COLON arg_operation arg_value {
+		Argument arg;
+		arg.key_path = new stack<KeyInfo>();
+		arg.operation = $2;
+		arg.value = $3;
+		$$ = arg;
+	}
 	| arg_key_path COLON error arg_value {
 		string key_path = join_key_path(*$1);
 		Location first_location = $1->top().at;

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Product 2",
+    "price": {
+      "currency": "USD",
+      "value": 20.0
+    }
+  },
+  {
+    "name": "Product 3",
+    "price": {
+      "currency": "USD",
+      "value": 30.0
+    }
+  }
+]

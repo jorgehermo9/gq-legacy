@@ -1,0 +1,27 @@
+[
+    {
+      "id": 1,
+      "name": "Product 1",
+      "price": {
+        "value": 10.0,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": 2,
+      "name": "Product 2",
+      "price": {
+        "value": 20.0,
+        "currency": "USD"
+      }
+    },
+    {
+      "id": 3,
+      "name": "Product 3",
+      "price": {
+        "value": 30.0,
+        "currency": "USD"
+      }
+    }
+  ]
+

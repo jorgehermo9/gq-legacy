@@ -1,0 +1,6 @@
+{
+  products(price.not_a_key: >=20) {
+    name
+    price
+  }
+}

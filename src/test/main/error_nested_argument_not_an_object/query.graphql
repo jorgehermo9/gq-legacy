@@ -1,0 +1,6 @@
+{
+  products(price.value.integer: >=20) {
+    name
+    price
+  }
+}

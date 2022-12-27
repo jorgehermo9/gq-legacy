@@ -1,0 +1,6 @@
+(currencies.EUR: != null){
+  name{
+    common
+  }
+  currencies
+}
