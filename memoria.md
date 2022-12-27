@@ -36,6 +36,8 @@ Hemos decidido que nuestra herramienta debe cumplir los siguientes requisitos fu
   - No contiene (strings)
   - Empieza por (strings)
   - No empieza por (strings)
+  - Termina por (strings)
+  - No termina por (strings)
 - Debe permitir que las operaciones sobre strings se realicen de forma case-insensitive o no.
 - Debe mostrar mensajes de error detallados (con línea y columna donde se ha producido) de tipo sintácticos, léxicos,
   semánticos y de cualquier otro tipo.
@@ -73,7 +75,7 @@ src/
 
   - `lexer`: tests para el lexer. En total hay 1 test de error.
   - `parser`: tests para la gramática. En total hay 20 tests de error.
-  - `main`: tests para el programa principal. En total hay 91 tests, de los cuales 36 son de error, 5 son de warning y 54 son de ejecución correcta.
+  - `main`: tests para el programa principal. En total hay 91 tests, de los cuales 42 son de error, 5 son de warning y 58 son de ejecución correcta.
 
   Además, se proporciona un script `run_all_tests.sh` que ejecuta todos los tests de forma automática.
 
@@ -121,4 +123,66 @@ Cabe destacar el tratamiento de los errores en los argumentos (reglas del no ter
 en qué _query_ se había producido el error, por lo que tuvimos que propagar el error y el mensaje asociado hacia arriba para que en la regla asociada al no terminal `query_key` se pudiera mostrar dicho mensaje.
 
 Una dificultad añadida fue que en vez tener la lógica de filtrado en las acciones semánticas de las propias reglas, decidimos
-construir el árbol que representa una _query_ en dichas acciones para, finalmente, devolver la _query_ completa en el axioma de la gramática,
+construir el árbol que representa una _query_ en dichas acciones para, finalmente, devolver la _query_ completa en el axioma de la gramática.
+
+# Ejecución
+
+## Compilación
+
+> Asumimos que se está en el directorio `src/`.
+
+Simplemente ejecutar:
+
+```console
+make
+```
+
+Esto generará el ejecutable `gq`.
+
+## Test
+
+> Asumimos que se está en el directorio `src/`.
+
+Todos los test se pueden ejecutar con:
+
+```console
+make test
+```
+
+Esto realmente lo que hace es ejecutar el script `test/run_all_tests.sh` que lanza todos los test de forma automática.
+A mayores, se puede ejecutar tests individuales utilizando el script `test/run_single_test.sh` de la siguiente forma:
+
+```console
+test/run_single_test.sh test/main/valid_array_query
+test/run_single_test.sh test/main/error_invalid_json_file
+test/run_single_test.sh test/parser/error_no_closing_query
+test/run_single_test.sh test/lexer/error_invalid_character
+```
+
+Para ver todos los tests disponibles, se puede hacer ejecutando `ls test/parser`, `ls test/lexer` y `ls test/main`.
+
+## Ejemplos
+
+Para ver la ayuda del programa, ejecutar `./gq -h`
+
+Se han proporcionado algunos ejemplos de _queries_ en el directorio `examples/`.
+
+Se pueden ejecutar con:
+
+```bash
+# Product examples
+
+./gq examples/products/product_names.graphql -j examples/products/products.json -o product_names.json;
+  cat product_names.json
+./gq examples/products/product_new_and_old.graphql -j examples/products/products.json
+./gq examples/products/product_zero_and_normal.graphql -j examples/products/products.json
+./gq examples/products/product_zero_and_normal_cheap.graphql -j examples/products/products.json
+```
+
+```bash
+# Pokemon examples
+
+./gq examples/pokemon/pokemon_name_and_abilities.graphql -u "https://pokeapi.co/api/v2/pokemon/snorlax"
+./gq examples/pokemon/pokemon_name_ends_with.graphql -u "https://pokeapi.co/api/v2/pokemon?limit=1154"
+./gq examples/pokemon/pokemon_best_stats.graphql -u "https://pokeapi.co/api/v2/pokemon/articuno"
+```
