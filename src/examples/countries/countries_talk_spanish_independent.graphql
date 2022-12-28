@@ -1,0 +1,5 @@
+(languages.spa: != null, independent: true) {
+	name {
+		common
+	}
+}
