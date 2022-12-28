@@ -3,6 +3,17 @@
 - David Rodríguez Bacelar (david.rbacelar@udc.es)
 - Jorge Hermo González (jorge.hermo.gonzalez@udc.es)
 
+# Motivaciones
+
+Existen varios métodos de exploración de los datos sobre archivos CSV, como por ejemplo `csvq`, el cual nos permite ejecutar consultas SQL sobre archivos CSV. Sin embargo, dichos archivos
+no nos permiten establecer una jerarquía de relaciones de forma sencilla de manera que los datos
+residan en un único CSV (ya que tiene mucha similitud con una tabla de una base de datos relacional). Los archivos JSON, en cambio, sí que nos permiten establecer una jerarquía de relaciones
+de forma sencilla, aunque con el inconveniente de que no permiten ejecutar consultas relacionales sobre ellos de forma sencilla.
+
+Entonces, lo que queremos proporcionar es una manera fácil, cómoda y estructurada de exploración de los datos en un archivo
+JSON, de manera que el usuario pueda obtener la información que necesita sin tener que escribir ningún
+script, o depender de una base de datos NoSQL para poder realizar una tarea tan básica.
+
 # Objetivos
 
 El principal objetivo de la práctica es el de **permitir filtrar un archivo JSON** utilizando una sintaxis muy similar a la
@@ -13,17 +24,6 @@ tamaño o la complejidad del archivo, su uso se vuelve mucho más complicado.
 Sin embargo nuestra herramienta, basándonos en la sintaxis de GraphQL, permitirá a los usuarios realizar un procesado del JSON
 de manera intuitiva y sencilla, permitiendo obtener sólo la información que necesitan de dicho JSON (el cual puede llegar
 a ser muy grande).
-
-# Motivaciones
-
-Existen varios métodos de exploración de los datos sobre archivos CSV, como por ejemplo `csvq`, el cual nos permite ejecutar consultas SQL sobre archivos CSV. Pero, los archivos CSV
-no nos permiten establecer una jerarquía de relaciones de forma sencilla de manera que los datos
-residan en un único archivo (Ya que tiene mucha similitud con una tabla de una base de datos relacional). Los archivos JSON sí que nos permiten establecer una jerarquía de relaciones
-de forma sencilla, pero no permiten ejecutar consultas relacionales sobre ellos de forma sencilla, de ahí que surjan las llamadas bases de datos no relacionales (NoSQL).
-
-Entonces,lo que queremos proporcionar es una manera sencilla de exploración de los datos en un archivo
-JSON, de manera que el usuario pueda obtener la información que necesita sin tener que escribir algún
-script, o depender de una base de datos NoSQL para poder realizar una tarea tan básica.
 
 ## Requistios funcionales
 
@@ -82,11 +82,11 @@ src/
 - En el directorio `lib` se encuentran las librerías que hemos utilizado para la práctica. En este caso, la librería `argparse.hpp`
   nos permite parsear los argumentos de la línea de comandos, y la librería `json.hpp` nos permite parsear el JSON de entrada.
 
-- En el directorio `test` se encuentran los tests de la práctica (en total 124). En este caso, los tests están divididos en tres directorios:
+- En el directorio `test` se encuentran los tests de la práctica (en total 129). En este caso, los tests están divididos en tres directorios:
 
   - `lexer`: tests para el lexer. En total hay 1 test de error.
   - `parser`: tests para la gramática. En total hay 20 tests de error.
-  - `main`: tests para el programa principal. En total hay 93 tests, de los cuales 43 son de error, 5 son de warning y 59 son de ejecución correcta.
+  - `main`: tests para el programa principal. En total hay 108 tests, de los cuales 44 son de error, 5 son de warning y 63 son de ejecución correcta.
 
   Además, se proporciona un script `run_all_tests.sh` que ejecuta todos los tests de forma automática.
 
@@ -138,8 +138,7 @@ construir el árbol que representa una _query_ en dichas acciones para, finalmen
 
 # Manual de uso
 
-Para la entrada de nuestro programa, necesitamos un archivo json y otro archivo graphql (la sintaxis no es exactamente la de graphql, así que explicaremos este
-en detalle)
+Para la entrada de nuestro programa, necesitamos un archivo json y otro archivo graphql. Sin embargo, la sintaxis que utilizamos no es exactamente la misma que graphql, así que la explicaremos en detalle a continuación.
 
 Para mostrar la sintaxis del archivo `graphql` utilizaremos el siguiente json de ejemplo:
 
@@ -176,47 +175,44 @@ Para mostrar la sintaxis del archivo `graphql` utilizaremos el siguiente json de
 
 ## Filtrado de campos
 
-Primero, una query está definida por un nombre, y, opcionalmente, por
-un par de llaves que dentro contenga otras queries. Por ejemplo:
+Primero, una query está definida por un nombre y, opcionalmente, por
+un par de llaves que dentro contengan otras queries. Por ejemplo:
 
 ```graphql
 query1
 
-query2{
-  field1{
+query2 {
+  field1 {
     sub_field1
   }
   field2
 }
 ```
 
-En este caso, `query1` y `query2` son dos queries, y `query2` tiene dos campos, `field1` y `field2`, a su vez, `field1` tiene un subcampo `sub_field1`.
+En este caso, `query1` y `query2` son dos queries, y `query2` tiene dos campos, `field1` y `field2`, a su vez, `field1` tiene un subcampo `sub_field1`. Como `query1` no tiene campos, se obtendrán todos los campos del json original.
 
-Un archivo `graphql` está bien formado si contiene dos llaves, y dentro de esas llaves puede tener o no más queries. Por ejemplo
-
-```graphql
-{
-
-}
-```
-
-o bien,
+Un archivo `graphql` está bien formado si contiene dos llaves, y dentro de esas llaves puede tener o no más queries. Por ejemplo:
 
 ```graphql
 {
   query1
   query2 {
     field1
-    field2
   }
 }
 ```
 
-Lo que haría la última query sería filtrar el json entrante para que solo se quedara con los campos `query1` y `query2`, y dentro de `query2` se quedarían los campos `field1` y `field2`.
+El siguiente archivo también estaría bien formado:
+
+```graphql
+{
+
+}
+```
 
 ### Ejemplos
 
-Siguiendo el archivo json mostrado al inicio de la sección, la query
+Siguiendo el archivo json mostrado al inicio de la sección, la query:
 
 ```graphql
 {
@@ -238,7 +234,7 @@ Resultaría en el siguiente json:
 }
 ```
 
-Cabe mencionar que permitimos algo que no es posible en GraphQl y nos parece muy útil, que es la opción de obtener todos los campos de un objecto sin tener que especificarlos explícitamente. Por ejemplo, la query
+Cabe mencionar que permitimos algo que no es posible en GraphQl y nos parece muy útil, que es la opción de **obtener todos los campos** de un objeto sin tener que especificarlos explícitamente. Por ejemplo, la query:
 
 ```graphql
 {
@@ -246,7 +242,7 @@ Cabe mencionar que permitimos algo que no es posible en GraphQl y nos parece muy
 }
 ```
 
-Devolvería todos los campos del campo `bill`, y la query
+Devolvería todos los campos del campo `bill`, y la query:
 
 ```graphql
 {
@@ -254,11 +250,11 @@ Devolvería todos los campos del campo `bill`, y la query
 }
 ```
 
-Devolvería todos los campos del json. Esto, en GraphQL devolvería un error.
+Devolvería todos los campos del json. Esto, en GraphQL sería un error.
 
 ## Aliases
 
-Se pueden utilizar aliases para renombrar el campo que se quiere filtrar. Por ejemplo, si queremos que traducir los campos al español, la query sería:
+Se pueden utilizar **aliases** para renombrar el campo que se quiere filtrar. Por ejemplo, si queremos traducir los campos al español, la query sería:
 
 ```graphql
 {
@@ -278,7 +274,7 @@ son los llamados **argumentos** en GraphQl. La sintaxis sería la siguiente:
 
 ```graphql
 {
-array_field(field1: value1, field2: value2, ...)
+  array_field(field1: value1, field2: value2, ...)
 }
 ```
 
@@ -297,16 +293,16 @@ Hay varios operadores disponibles, siendo el default (si está vacío) el operad
 
 - `=`: igualdad
 - `!=`: distinto
-- `>`: mayor que (solo disponible para tipos numéricos)
-- `<`: menor que (solo disponible para tipos numéricos)
-- `>=`: mayor o igual que (solo disponible para tipos numéricos)
-- `<=`: menor o igual que (solo disponible para tipos numéricos)
-- `~`: contiene (solo disponible para tipos string)
-- `!~`: no contiene (solo disponible para tipos string)
-- `^`: empieza por (solo disponible para tipos string)
-- `!^`: no empieza por (solo disponible para tipos string)
-- `$`: termina por (solo disponible para tipos string)
-- `!$`: no termina por (solo disponible para tipos string)
+- `>`: mayor que (para tipos numéricos)
+- `<`: menor que (para tipos numéricos)
+- `>=`: mayor o igual que (para tipos numéricos)
+- `<=`: menor o igual que (para tipos numéricos)
+- `~`: contiene (para tipos string)
+- `!~`: no contiene (para tipos string)
+- `^`: empieza por (para tipos string)
+- `!^`: no empieza por (para tipos string)
+- `$`: termina por (para tipos string)
+- `!$`: no termina por (para tipos string)
 
 ### Modificadores sobre operadores
 
@@ -347,7 +343,7 @@ Tendría como resultado el siguiente json:
 }
 ```
 
-Y la query
+Y la query:
 
 ```graphql
 {
@@ -359,7 +355,7 @@ Y la query
 }
 ```
 
-tendría como resultado el json
+tendría como resultado el json:
 
 ```json
 {
@@ -390,7 +386,7 @@ Podemos combinar los aliases y los filtros, para poder dividir los arrays, por e
 }
 ```
 
-Daría como resultado el json
+Daría como resultado el json:
 
 ```json
 {
@@ -424,7 +420,7 @@ El filtrado se puede realizar sobre campos que sean un array de un tipo en concr
 }
 ```
 
-Devolvería el json
+Devolvería el json:
 
 ```json
 {
@@ -443,7 +439,7 @@ Se puede ver que el producto 2 no se devuelve, ya que no tiene el tag `tag1`, y 
 
 ### Nested fields
 
-Hasta ahora, sólo podíamos consultar los campos del top-level de un array de objectos, es decir, las que están inmediatamente presentes. Pero para poder filtrar utilizando campos que están _nested_ dentro de cada elemento del array, se puede utilizar el operador `.`, concatenando los distintos campos a los que queremos acceder. Por ejemplo, la siguiente query:
+Hasta ahora, sólo podíamos consultar los campos del top-level de un array de objectos, es decir, los que están inmediatamente presentes. Pero para poder filtrar utilizando campos que están _nested_ dentro de cada elemento del array, se puede utilizar el operador `.`, concatenando los distintos campos a los que queremos acceder. Por ejemplo, la siguiente query:
 
 ```graphql
 {
@@ -456,7 +452,7 @@ Hasta ahora, sólo podíamos consultar los campos del top-level de un array de o
 }
 ```
 
-Devolvería el json
+Devolvería el json:
 
 ```json
 {
