@@ -139,9 +139,9 @@ construir el árbol que representa una _query_ en dichas acciones para, finalmen
 # Conclusiones
 
 En general, el proyecto ha cumplido con nuestras expectativas, ya que hemos conseguido implementar todas las funcionalidades
-que esperábamos. Hemos querido centrarnos en tener unas funcionalidades bien definidas, y muy testeadas, tanto casos de error
-como de ejecución válida, de ahí que tengamos un total de 130 tests. Esto nos permitió, durante el desarrollo de nuevas funcionalidades, asegurarnos de que no se habían roto las ya existentes previamente, y además permite que se pueda continuar
-creciendo el proyecto si así se desea en un futuro.
+que esperábamos en un principio. Hemos querido centrarnos en tener unas funcionalidades bien definidas y muy testeadas, tanto casos de error
+como de ejecución válida, de ahí que tengamos un total de 130 tests. Esto nos permitió, durante el desarrollo de nuevas funcionalidades, asegurarnos de que no se habían roto las ya existentes, a la par que permite que pueda continuar
+creciendo el proyecto en un futuro.
 
 Hemos intentado crear una sintaxis lo más natural y sencilla posible (dándole bastante importancia a la experiencia de usuario), que creemos que también le da valor a nuestro proyecto, además de mensajes de error muy detallados, en los que en varios casos
 se muestra como solucionarlos (_hints_).
