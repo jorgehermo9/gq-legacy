@@ -12,6 +12,8 @@ using json = nlohmann::json;
 
 extern "C" int yylex();
 
+bool quiet = false;
+
 void print_spaces(int level) {
   for (int i = 0; i < level; i++) {
     cout << "  ";
@@ -91,6 +93,11 @@ int main(int argc, char* argv[]) {
   program.add_argument("-o", "--output")
       .help("output file for filtered json")
       .default_value(string(""));
+  program.add_argument("-q", "--quiet")
+      .help("quiet mode (supress warnings)")
+      .default_value(false)
+      .implicit_value(true);
+
 
   try {
     program.parse_args(argc, argv);
@@ -99,6 +106,8 @@ int main(int argc, char* argv[]) {
     cerr << program;
     exit(1);
   }
+
+  quiet = program.get<bool>("quiet");
 
   json data;
   string query_file = program.get<string>("query");

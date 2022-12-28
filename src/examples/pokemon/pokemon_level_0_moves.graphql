@@ -1,0 +1,9 @@
+{
+	name
+
+	moves(version_group_details.level_learned_at: 0){
+		move{
+			name
+		}
+	}
+}

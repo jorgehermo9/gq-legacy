@@ -1,5 +1,7 @@
 #include "errors.hpp"
 
+extern bool quiet;
+
 using namespace std;
 
 string get_query_name(Query query) {
@@ -20,6 +22,9 @@ void print_error(Query query, string error_message) {
 }
 
 void print_warning(Query query, string warning_message) {
+  if (quiet) {
+    return;
+  }
   string query_name = get_query_name(query);
   cerr << YELLOW("Warning") << " in " << query_name << " declared at "
        << YELLOW(to_string(query.query_key.info.at.line) + ":" +

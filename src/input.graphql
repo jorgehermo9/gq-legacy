@@ -1,2 +1,8 @@
-(currencies.EUR: != null){
+{
+  bill {
+    products(price.currency: "EUR") {
+      name
+      price
+    }
+  }
 }
