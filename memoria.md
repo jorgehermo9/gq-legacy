@@ -214,6 +214,8 @@ o bien,
 
 Lo que haría la última query sería filtrar el json entrante para que solo se quedara con los campos `query1` y `query2`, y dentro de `query2` se quedarían los campos `field1` y `field2`.
 
+### Ejemplos
+
 Siguiendo el archivo json mostrado al inicio de la sección, la query
 
 ```graphql
@@ -280,12 +282,16 @@ array_field(field1: value1, field2: value2, ...)
 }
 ```
 
+### Tipos de los valores
+
 Los tipos disponibles para los valores son:
 
 - `string`: se especifica entre comillas dobles
 - `number`: puede ser tanto un entero como un valor decimal
 - `boolean`: `true` o `false`
 - `null`: tipo especial que representa el valor nulo
+
+### Operadores
 
 Hay varios operadores disponibles, siendo el default (si está vacío) el operador `=`. Los operadores disponibles son:
 
@@ -302,6 +308,8 @@ Hay varios operadores disponibles, siendo el default (si está vacío) el operad
 - `$`: termina por (solo disponible para tipos string)
 - `!$`: no termina por (solo disponible para tipos string)
 
+### Modificadores sobre operadores
+
 Además, las operaciones soportadas por los tipos string, permiten un modificador
 para que la comprobación de la condición se haga de forma _case insentive_. Esto se especifica poniendo un `*` al final del operador. Por ejemplo:
 
@@ -310,6 +318,8 @@ para que la comprobación de la condición se haga de forma _case insentive_. Es
   array_field(field: ~*"text")
 }
 ```
+
+### Ejemplos
 
 Siguiendo el ejemplo del json mostrado al inicio de la sección, la query
 
@@ -363,6 +373,8 @@ tendría como resultado el json
 }
 ```
 
+### Aliases y argumentos
+
 Podemos combinar los aliases y los filtros, para poder dividir los arrays, por ejemplo:
 
 ```graphql
@@ -397,6 +409,8 @@ Daría como resultado el json
 }
 ```
 
+### Operaciones sobre arrays
+
 El filtrado se puede realizar sobre campos que sean un array de un tipo en concreto. La condición se cumplirá si **alguno** de los elementos del array cumple la condición. Por ejemplo, la siguiente query:
 
 ```graphql
@@ -426,6 +440,8 @@ Devolvería el json
 ```
 
 Se puede ver que el producto 2 no se devuelve, ya que no tiene el tag `tag1`, y el product 1 se devuelve aunque tenga un tag que no cumpla la condición (el otro sí).
+
+### Nested fields
 
 Hasta ahora, sólo podíamos consultar los campos del top-level de un array de objectos, es decir, las que están inmediatamente presentes. Pero para poder filtrar utilizando campos que están _nested_ dentro de cada elemento del array, se puede utilizar el operador `.`, concatenando los distintos campos a los que queremos acceder. Por ejemplo, la siguiente query:
 
@@ -532,6 +548,7 @@ Se pueden ejecutar con:
 
 ```bash
 # Countries example
+# The json in the examples is provided by https://restcountries.com/
 
 ## Get the countries which uses euros as currency
 ./gq examples/countries/countries_euro.graphql -j examples/countries/countries.json -q
