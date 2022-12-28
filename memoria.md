@@ -573,4 +573,7 @@ Se pueden ejecutar con:
 
 ## Get the countries in which common names contains the word `south`
 ./gq examples/countries/countries_southern.graphql -j examples/countries/countries.json
+
+## Get the countries that talk spanish and are independent
+./gq examples/countries/countries_talk_spanish_independent.graphql -j examples/countries/countries.json -q
 ```
