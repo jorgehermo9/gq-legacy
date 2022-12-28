@@ -527,7 +527,7 @@ Se han proporcionado algunos ejemplos de _queries_ en el directorio `examples/`.
 Se pueden ejecutar con:
 
 ```bash
-# Product examples
+# Product examples, on examples/products
 
 ./gq examples/products/product_names.graphql -j examples/products/products.json -o product_names.json;
   cat product_names.json
@@ -537,7 +537,7 @@ Se pueden ejecutar con:
 ```
 
 ```bash
-# Pokemon examples
+# Pokemon examples, on examples/pokemon
 
 ## Get pokemon name and its abilities
 ./gq examples/pokemon/pokemon_name_and_abilities.graphql -u "https://pokeapi.co/api/v2/pokemon/snorlax"
@@ -553,7 +553,7 @@ Se pueden ejecutar con:
 ```
 
 ```bash
-# Countries example
+# Countries example, on examples/countries
 # The json in the examples is provided by https://restcountries.com/
 
 ## Get the countries which uses euros as currency
@@ -576,4 +576,12 @@ Se pueden ejecutar con:
 
 ## Get the countries that talk spanish and are independent
 ./gq examples/countries/countries_talk_spanish_independent.graphql -j examples/countries/countries.json -q
+```
+
+
+Finalmente, si se desean ver más ejemplos, se pueden
+ver los test válidos de la carpeta `test/main`, de la siguiente forma:
+
+```bash
+ls test/main | grep "^valid"
 ```
