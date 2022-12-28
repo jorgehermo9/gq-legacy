@@ -82,11 +82,11 @@ src/
 - En el directorio `lib` se encuentran las librerías que hemos utilizado para la práctica. En este caso, la librería `argparse.hpp`
   nos permite parsear los argumentos de la línea de comandos, y la librería `json.hpp` nos permite parsear el JSON de entrada.
 
-- En el directorio `test` se encuentran los tests de la práctica (en total 129). En este caso, los tests están divididos en tres directorios:
+- En el directorio `test` se encuentran los tests de la práctica (en total 130). En este caso, los tests están divididos en tres directorios:
 
   - `lexer`: tests para el lexer. En total hay 1 test de error.
   - `parser`: tests para la gramática. En total hay 20 tests de error.
-  - `main`: tests para el programa principal. En total hay 108 tests, de los cuales 44 son de error, 5 son de warning y 63 son de ejecución correcta.
+  - `main`: tests para el programa principal. En total hay 109 tests, de los cuales 44 son de error, 5 son de warning y 64 son de ejecución correcta.
 
   Además, se proporciona un script `run_all_tests.sh` que ejecuta todos los tests de forma automática.
 
@@ -125,7 +125,7 @@ Asumimos entonces que:
 
 Definir dicho _happy path_ no fue realmente complicado, sin embargo, al querer darle tanto importancia a los errores,
 la gramática se volvió mucho más compleja, ya que queríamos que en los diferentes casos, los errores fuesen lo más detallados
-posibles.
+posibles, incluyendo línea y columna en donde se produce dicho error.
 
 Cuando no era factible enumerar todos los posibles tokens que podían dar lugar a cierto error, optamos por utilizar
 el token comodín `error`.
@@ -135,6 +135,16 @@ en qué _query_ se había producido el error, por lo que tuvimos que propagar el
 
 Una dificultad añadida fue que en vez tener la lógica de filtrado en las acciones semánticas de las propias reglas, decidimos
 construir el árbol que representa una _query_ en dichas acciones para, finalmente, devolver la _query_ completa en el axioma de la gramática.
+
+# Conclusiones
+
+En general, el proyecto ha cumplido con nuestras expectativas, ya que hemos conseguido implementar todas las funcionalidades
+que esperábamos. Hemos querido centrarnos en tener unas funcionalidades bien definidas, y muy testeadas, tanto casos de error
+como de ejecución válida, de ahí que tengamos un total de 130 tests. Esto nos permitió, durante el desarrollo de nuevas funcionalidades, asegurarnos de que no se habían roto las ya existentes previamente, y además permite que se pueda continuar
+creciendo el proyecto si así se desea en un futuro.
+
+Hemos intentado crear una sintaxis lo más natural y sencilla posible (dándole bastante importancia a la experiencia de usuario), que creemos que también le da valor a nuestro proyecto, además de mensajes de error muy detallados, en los que en varios casos
+se muestra como solucionarlos (_hints_).
 
 # Manual de uso
 
