@@ -484,6 +484,16 @@ Devolvería el json:
 
 ## Compilación
 
+### Dependencias
+
+Las dependencias necesarias para compilar el proyecto son:
+
+- Librería de flex
+- Librería de bison
+- Compilador g++
+- CMake
+- Librería curl (`libcurl`). Instalarla en caso de que sea necesario, pero ya debería venir instalada en la mayoría de los sistemas.
+
 > Asumimos que se está en el directorio `src/`.
 
 Simplemente ejecutar:
@@ -577,7 +587,6 @@ Se pueden ejecutar con:
 ## Get the countries that talk spanish and are independent
 ./gq examples/countries/countries_talk_spanish_independent.graphql -j examples/countries/countries.json -q
 ```
-
 
 Finalmente, si se desean ver más ejemplos, se pueden
 ver los test válidos de la carpeta `test/main`, de la siguiente forma:
