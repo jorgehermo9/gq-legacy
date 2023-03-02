@@ -1,0 +1,16 @@
+{
+  "bill": {
+    "purchaser": "One S.A",
+    "seller": "Two S.A",
+    "products": [
+      {
+        "name": "Product 1",
+        "quantity": 3
+      },
+      {
+        "name": "Product 2",
+        "quantity": 1
+      }
+    ]
+  }
+}

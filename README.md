@@ -11,10 +11,8 @@ A **fast** and **feature rich** JSON filtering tool
 <summary><strong>&nbsp;FEATURES &nbsp;✨</strong></summary>
 <br>
 
-The current supported features are:
-
 - **Filtering**: filter JSON objects getting only the fields you want.
-- **Url and file compatible**: it can read as input a JSON file or a URL.
+- **Url and file compatibility**: it can read as input a JSON file or a URL.
 - **All JSON types**: it supports all JSON types including arrays, objects...
 - **Aliases**: you can use aliases to rename fields in the output file.
 - **Conditions**: you can establish conditions that field's values must meet.
@@ -63,5 +61,18 @@ Over this JSON:
       }
     ]
   },
+}
+```
+
+* We can use this simple graphql-like query to get only the name and price of each product:
+
+```graphql
+{
+  bill {
+    products {
+      name
+      price
+    }
+  }
 }
 ```
