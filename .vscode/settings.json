@@ -1,7 +1,0 @@
-{
-  "files.associations": {
-    ".env.local": "env",
-    "ostream": "cpp",
-    "typeinfo": "cpp"
-  }
-}
