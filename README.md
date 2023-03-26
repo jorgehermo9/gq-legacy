@@ -1,4 +1,4 @@
-<div align="center"> <h1><strong>GQ</strong></h1> </div>
+<div align="center"> <h1><strong>gq</strong></h1> </div>
 <div align="center">
 
 A **fast** and **feature rich** JSON filtering tool
@@ -11,7 +11,7 @@ A **fast** and **feature rich** JSON filtering tool
 <summary><strong>&nbsp;FEATURES &nbsp;✨</strong></summary>
 <br>
 
-- **Filtering**: filter JSON objects getting only the fields you want.
+- **Filtering**: filter JSON objects getting only the fields you want, using a GraphQL-like syntax.
 - **Url and file compatibility**: it can read as input a JSON file, got from a url, a file or from stdin.
 - **All JSON types**: it supports all JSON types including arrays, objects...
 - **Aliases**: you can use aliases to rename fields in the output file.
@@ -36,7 +36,7 @@ A **fast** and **feature rich** JSON filtering tool
 <details open>
 <summary><strong>&nbsp;USAGE &nbsp;🪧</strong></summary>
 
-Let's see how easy is to use GQ to filter a JSON file.
+Let's see how easy is to use `gq` to filter a JSON file.
 
 Over this JSON:
 
