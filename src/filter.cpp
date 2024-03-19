@@ -305,6 +305,7 @@ json do_filter(Query query, json data, string path) {
       string target_key = *child.query_key.info.name;
       string alias_key = *child.query_key.alias;
       if (!data.contains(target_key)) {
+        // TODO: this should be a warning
         string error_message = "Could not find key " + CYAN(target_key) +
                                " in " + CYAN(local_path);
         print_error(query, error_message);
